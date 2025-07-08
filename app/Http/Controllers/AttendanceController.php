@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Attendance;
 use Carbon\Carbon;
@@ -64,7 +64,16 @@ class AttendanceController extends Controller
     // Return to the Blade view named 'attendance.view'
     return view('attendance.view', ['records' => $attendances]);
 }
+public function getAttendanceData(Request $request)
+{
+    $user = Auth::user();
 
+    $attendances = Attendance::where('user_id', $user->id)
+        ->orderBy('date', 'desc')
+        ->get(['date', 'status']);
+
+    return response()->json($attendances);
+}
 
     
 }

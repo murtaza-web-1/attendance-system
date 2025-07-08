@@ -45,17 +45,36 @@
         .logout-btn:hover {
             background: #b71c1c;
         }
+        table {
+            width: 100%;
+            margin-top: 15px;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #cfcfcf;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #eeeeee;
+        }
     </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <div class="dashboard-container">
         <h2>Welcome, {{ Auth::user()->name }}</h2>
         <div class="dummy-data">
-        @if(session('success'))
-    <div class="alert alert-success">
-        {{ session('success') }}
-    </div>
-@endif
+
+            {{-- Flash Message --}}
+            @if(session('success'))
+                <div style="color: green; font-weight: bold; margin-bottom: 10px;">
+                    {{ session('success') }}
+                </div>
+            @endif
+
             <h4>Dashboard</h4>
             <ul>
                 <li>Last login: {{ now()->subDays(1)->toDateTimeString() }}</li>
@@ -73,14 +92,53 @@
                     </form>
                 </li>
                 <li>
-                    <a href="{{ route('attendance.view.submit') }}">
-                        <button type="button">View Attendance</button>
-                    </a>
+                    <button type="button" id="view-attendance-btn">View Attendance</button>
                 </li>
             </ul>
+
+            <div id="attendance-section" style="margin-top: 20px;"></div>
+
         </div>
         <a class="logout-btn" href="{{ route('logout') }}">Logout</a>
     </div>
-</body>
 
+    <script>
+        $(document).ready(function () {
+            $('#view-attendance-btn').click(function () {
+                $('#attendance-section').html('<p>Loading attendance...</p>');
+
+                $.ajax({
+                    url: "{{ route('attendance.view.submit') }}",
+                    method: "GET",
+                    success: function (data) {
+                        let html = `
+                            <h3>Your Attendance</h3>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                        `;
+                        if (data.length === 0) {
+                            html += '<tr><td colspan="2">No records found.</td></tr>';
+                        } else {
+                            data.forEach(function (record) {
+                                html += `<tr><td>${record.date}</td><td>${record.status}</td></tr>`;
+                            });
+                        }
+
+                        html += '</tbody></table>';
+                        $('#attendance-section').html(html);
+                    },
+                    error: function () {
+                        $('#attendance-section').html('<p style="color:red;">Error loading attendance data.</p>');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
 </html>
