@@ -51,11 +51,11 @@
     <div class="dashboard-container">
         <h2>Welcome, {{ Auth::user()->name }}</h2>
         <div class="dummy-data">
-             @if (session('success'))
-            <div class="success-message">
-                {{ session('success') }}
-            </div>
-        @endif
+        @if(session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
             <h4>Dashboard</h4>
             <ul>
                 <li>Last login: {{ now()->subDays(1)->toDateTimeString() }}</li>
@@ -73,7 +73,7 @@
                     </form>
                 </li>
                 <li>
-                    <a href="{{ route('attendance.view') }}">
+                    <a href="{{ route('attendance.view.submit') }}">
                         <button type="button">View Attendance</button>
                     </a>
                 </li>

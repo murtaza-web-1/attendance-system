@@ -30,6 +30,7 @@ Route::get('/logout', function () {
 // User dashboard
 Route::get('/dashboard', fn() => view('dashboard'))->middleware('auth')->name('dashboard');
 
+Route::get('/attendance/view', [AttendanceController::class, 'viewAttendance'])->name('attendance.view');
 
 //
 // 🔐 Admin Authentication Routes
@@ -74,6 +75,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::post('/attendance/view', [AttendanceController::class, 'markAttendance'])->name('attendance.mark');
+    Route::get('/attendance/view', [AttendanceController::class, 'viewAttendance'])->name('attendance.view.submit');
     Route::post('/leave/mark', [AttendanceController::class, 'markLeave'])->name('leave.mark');
-    Route::get('/attendance/view', [AttendanceController::class, 'viewAttendance'])->name('attendance.view');
 });

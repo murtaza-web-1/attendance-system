@@ -18,8 +18,7 @@ class AttendanceController extends Controller
             ->exists();
 
         if ($alreadyMarked) {
-             return back()->with(['success', 'You have already marked attendance today'], 403);
-            // return response()->json(['message' => 'You have already marked attendance today'], 403);
+             return redirect()->back()->with('success', 'You have already marked attendance today');
         }
 
         Attendance::create([
@@ -27,9 +26,8 @@ class AttendanceController extends Controller
             'status' => 'present',
             'date' => $today
         ]);
-        //   return back()->withErrors(['email' => 'Invalid credentials']);
-        //    return redirect('/login')->with('success', 'Registration successful. Please login.');
-     return back()->with(['success', 'Attendance marked successfully']);
+       
+          return redirect()->back()->with('success', 'Attendance marked successfully!');
     }
 
     public function markLeave(Request $request)
@@ -42,8 +40,9 @@ class AttendanceController extends Controller
             ->exists();
 
         if ($alreadyMarked) {
-            return response()->json(['message' => 'You have already marked attendance/leave today'], 403);
+            return redirect()->back()->with('success', 'You have already marked attendance/leave today');
         }
+        
 
         Attendance::create([
             'user_id' => $user->id,
@@ -51,17 +50,21 @@ class AttendanceController extends Controller
             'date' => $today
         ]);
 
-        return response()->json(['message' => 'Leave marked']);
-    }
+        return redirect()->back()->with('success', 'Leave marked successfully!');
+        }
 
-    public function viewAttendance(Request $request)
-    {
-        $user = $request->user();
+ public function viewAttendance(Request $request)
+{
+    $user = $request->user();
 
-        $attendances = Attendance::where('user_id', $user->id)
-            ->orderBy('date', 'desc')
-            ->get(['date', 'status']);
+    $attendances = Attendance::where('user_id', $user->id)
+        ->orderBy('date', 'desc')
+        ->get(['date', 'status']);
 
-        return response()->json($attendances);
-    }
+    // Return to the Blade view named 'attendance.view'
+    return view('attendance.view', ['records' => $attendances]);
+}
+
+
+    
 }
