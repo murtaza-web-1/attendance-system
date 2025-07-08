@@ -53,7 +53,7 @@ Route::prefix('admin')->group(function () {
 //
 // 🛡️ Admin Protected Routes
 //
-Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+Route::middleware(['auth:admin', 'admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
     // Attendance management

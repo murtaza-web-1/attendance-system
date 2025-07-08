@@ -27,7 +27,7 @@ class AdminAuthController extends Controller
         // Check if user is an admin
         $user = User::where('email', $credentials['email'])->where('role', 'admin')->first();
 
-        if ($user && Auth::attempt($credentials)) {
+        if ($user && Auth::guard('admin')->attempt($credentials)) {
             return redirect()->route('admin.dashboard');
         }
 
@@ -68,7 +68,7 @@ class AdminAuthController extends Controller
      */
     public function logout()
     {
-        Auth::logout();
+        Auth::guard('admin')->logout();
         return redirect()->route('admin.login')->with('success', 'Logged out successfully.');
     }
 }
