@@ -29,7 +29,7 @@ Route::get('/logout', function () {
 })->middleware('auth')->name('logout');
 
 // User dashboard
-Route::get('/dashboard', fn() => view('dashboard'))->middleware('auth')->name('dashboard');
+Route::get('/dashboard', fn() => view('dashboard'))->middleware('auth:web')->name('dashboard');
 
 Route::get('/attendance/view', [AttendanceController::class, 'viewAttendance'])->name('attendance.view');
 
@@ -76,13 +76,13 @@ Route::middleware(['auth:admin', 'admin'])->prefix('admin')->group(function () {
 });
 
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth:web'])->group(function () {
     Route::post('/attendance/view', [AttendanceController::class, 'markAttendance'])->name('attendance.mark');
     Route::get('/attendance/view', [AttendanceController::class, 'viewAttendance'])->name('attendance.view.submit');
     Route::post('/leave/mark', [AttendanceController::class, 'markLeave'])->name('leave.mark');
 });
 
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth:web'])->group(function () {
     Route::get('/attendance/view-data', [AttendanceController::class, 'getAttendanceData'])->name('attendance.view.submit');
 });
