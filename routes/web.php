@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\Admin\Auth\LoginController;
 
 // 🌐 Public Routes
 //
@@ -42,6 +43,8 @@ Route::prefix('admin')->group(function () {
 
     Route::get('/register', [AdminAuthController::class, 'showRegisterForm'])->name('admin.register');
     Route::post('/register', [AdminAuthController::class, 'register'])->name('admin.register.submit');
+    Route::post('/admin/register', [AdminAuthController::class, 'register'])->name('admin.register.submit');
+    Route::get('/admin/register', [AdminAuthController::class, 'showRegisterForm'])->name('admin.register');
 
     Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
 });
