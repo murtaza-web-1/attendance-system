@@ -5,8 +5,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminAuthController;
+use App\Http\Controllers\AttendanceController;
 
-//
 // 🌐 Public Routes
 //
 
@@ -69,4 +69,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     // Grading
     Route::get('/grading', [AdminController::class, 'grading'])->name('admin.grading');
     Route::post('/grading', [AdminController::class, 'saveGrading'])->name('admin.grading.save');
+});
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('/attendance/view', [AttendanceController::class, 'markAttendance'])->name('attendance.mark');
+    Route::post('/leave/mark', [AttendanceController::class, 'markLeave'])->name('leave.mark');
+    Route::get('/attendance/view', [AttendanceController::class, 'viewAttendance'])->name('attendance.view');
 });

@@ -8,7 +8,7 @@ use Carbon\Carbon;
 
 class AttendanceController extends Controller
 {
-    public function mark(Request $request)
+    public function markAttendance(Request $request)
     {
         $user = $request->user();
         $today = Carbon::today();
@@ -18,7 +18,8 @@ class AttendanceController extends Controller
             ->exists();
 
         if ($alreadyMarked) {
-            return response()->json(['message' => 'You have already marked attendance today'], 403);
+             return back()->with(['success', 'You have already marked attendance today'], 403);
+            // return response()->json(['message' => 'You have already marked attendance today'], 403);
         }
 
         Attendance::create([
@@ -26,8 +27,9 @@ class AttendanceController extends Controller
             'status' => 'present',
             'date' => $today
         ]);
-
-        return response()->json(['message' => 'Attendance marked as present']);
+        //   return back()->withErrors(['email' => 'Invalid credentials']);
+        //    return redirect('/login')->with('success', 'Registration successful. Please login.');
+     return back()->with(['success', 'Attendance marked successfully']);
     }
 
     public function markLeave(Request $request)
@@ -52,7 +54,7 @@ class AttendanceController extends Controller
         return response()->json(['message' => 'Leave marked']);
     }
 
-    public function view(Request $request)
+    public function viewAttendance(Request $request)
     {
         $user = $request->user();
 

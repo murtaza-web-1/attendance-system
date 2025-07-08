@@ -50,16 +50,37 @@
 <body>
     <div class="dashboard-container">
         <h2>Welcome, {{ Auth::user()->name }}</h2>
-        <p style="color:#555;">This is your dashboard.</p>
         <div class="dummy-data">
-            <h4>Dummy Data</h4>
+             @if (session('success'))
+            <div class="success-message">
+                {{ session('success') }}
+            </div>
+        @endif
+            <h4>Dashboard</h4>
             <ul>
-                <li>Attendance: Present</li>
                 <li>Last login: {{ now()->subDays(1)->toDateTimeString() }}</li>
                 <li>Role: User</li>
+                <li>
+                    <form method="POST" action="{{ route('attendance.mark') }}">
+                        @csrf
+                        <button type="submit">Mark Attendance</button>
+                    </form>
+                </li>
+                <li>
+                    <form method="POST" action="{{ route('leave.mark') }}">
+                        @csrf
+                        <button type="submit">Mark Leave</button>
+                    </form>
+                </li>
+                <li>
+                    <a href="{{ route('attendance.view') }}">
+                        <button type="button">View Attendance</button>
+                    </a>
+                </li>
             </ul>
         </div>
         <a class="logout-btn" href="{{ route('logout') }}">Logout</a>
     </div>
 </body>
+
 </html>
