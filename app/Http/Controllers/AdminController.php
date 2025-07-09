@@ -10,7 +10,7 @@ use Carbon\Carbon;
 class AdminController extends Controller
 {
     /**
-     * Admin dashboard: general overview.
+     * Admin dashboard: show all attendance records with summary.
      */
     public function dashboard()
     {
@@ -29,54 +29,51 @@ class AdminController extends Controller
     }
 
     /**
-     * Manage attendance with filters and search.
+     * Filter and manage attendance by date or name.
      */
-  public function manageAttendance(Request $request)
-{
-    $query = Attendance::with('user')->orderBy('date', 'desc');
+    public function manageAttendance(Request $request)
+    {
+        $query = Attendance::with('user')->orderBy('date', 'desc');
 
-    // 🔍 Filter by date range
-    if ($request->filled('from') && $request->filled('to')) {
-        $query->whereBetween('date', [$request->from, $request->to]);
+        // Filter by date range
+        if ($request->filled('from') && $request->filled('to')) {
+            $query->whereBetween('date', [$request->from, $request->to]);
+        }
+
+        // Search by user name
+        if ($request->filled('search')) {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        $attendances = $query->get();
+
+        $presentCount = $attendances->where('status', 'present')->count();
+        $absentCount  = $attendances->where('status', 'absent')->count();
+        $leaveCount   = $attendances->where('status', 'leave')->count();
+
+        return view('admin.dashboard', compact(
+            'attendances',
+            'presentCount',
+            'absentCount',
+            'leaveCount'
+        ));
     }
-
-    // 🔍 Filter by user name
-    if ($request->filled('search')) {
-        $query->whereHas('user', function ($q) use ($request) {
-            $q->where('name', 'like', '%' . $request->search . '%');
-        });
-    }
-
-    $attendances = $query->get();
-
-    // 📊 Count attendance types
-    $presentCount = $attendances->where('status', 'present')->count();
-    $absentCount  = $attendances->where('status', 'absent')->count();
-    $leaveCount   = $attendances->where('status', 'leave')->count();
-
-    // ✅ Return to the existing dashboard view
-    return view('admin.dashboard', compact(
-        'attendances',
-        'presentCount',
-        'absentCount',
-        'leaveCount'
-    ));
-}
-
 
     /**
-     * Show edit form for attendance.
+     * Show edit form for a single attendance record.
      */
     public function edit($id)
     {
         $attendance = Attendance::findOrFail($id);
         $students = User::all();
 
-        return view('admin.attendances.edit', compact('attendance', 'students'));
+        return view('admin.edit', compact('attendance', 'students'));
     }
 
     /**
-     * Update attendance record.
+     * Update attendance status/date.
      */
     public function update(Request $request, $id)
     {
@@ -92,7 +89,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Delete attendance record.
+     * Delete an attendance record.
      */
     public function destroy($id)
     {
@@ -101,11 +98,16 @@ class AdminController extends Controller
     }
 
     /**
-     * Toggle leave approval status.
+     * Toggle leave approval for a leave record.
      */
     public function toggleLeave($id)
     {
         $attendance = Attendance::findOrFail($id);
+
+        if ($attendance->status !== 'leave') {
+            return redirect()->back()->with('error', 'Only leave records can be approved or unapproved.');
+        }
+
         $attendance->leave_approved = !$attendance->leave_approved;
         $attendance->save();
 
@@ -113,7 +115,7 @@ class AdminController extends Controller
     }
 
     /**
-     * List all leave requests.
+     * Show all leave requests.
      */
     public function leaves()
     {
@@ -122,7 +124,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Approve a leave.
+     * Approve a single leave request (force approve).
      */
     public function approveLeave($id)
     {
@@ -134,7 +136,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Show report filter form.
+     * Show date filter form for reports.
      */
     public function reports()
     {
@@ -142,7 +144,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Generate report based on date range.
+     * Generate attendance report for a date range.
      */
     public function generateReport(Request $request)
     {
@@ -160,7 +162,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Grade students based on attendance.
+     * Display students with attendance counts and assign grades.
      */
     public function grading()
     {
@@ -188,15 +190,14 @@ class AdminController extends Controller
     }
 
     /**
-     * Save grading logic if needed.
+     * Save grading data to the users table.
      */
     public function saveGrading(Request $request)
     {
-        // Optional: Save grade logic to DB if you have a `grade` column in users table
-    foreach ($request->grades as $userId => $grade) {
-        User::where('id', $userId)->update(['grade' => $grade]);
-    }
+        foreach ($request->grades as $userId => $grade) {
+            User::where('id', $userId)->update(['grade' => $grade]);
+        }
 
-    return redirect()->route('admin.grading')->with('success', 'Grades saved successfully.');
+        return redirect()->route('admin.grading')->with('success', 'Grades saved successfully.');
     }
 }
