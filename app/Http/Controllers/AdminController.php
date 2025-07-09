@@ -16,9 +16,9 @@ class AdminController extends Controller
     {
         $attendances = Attendance::with('user')->latest()->get();
 
-        $presentCount = $attendances->where('status', 'present')->count();
-        $absentCount  = $attendances->where('status', 'absent')->count();
-        $leaveCount   = $attendances->where('status', 'leave')->count();
+        $presentCount = $attendances->where('status', 'Present')->count();
+        $absentCount  = $attendances->where('status', 'Absent')->count();
+        $leaveCount   = $attendances->where('status', 'Leave')->count();
 
         return view('admin.dashboard', compact(
             'attendances',
@@ -49,9 +49,9 @@ class AdminController extends Controller
 
         $attendances = $query->get();
 
-        $presentCount = $attendances->where('status', 'present')->count();
-        $absentCount  = $attendances->where('status', 'absent')->count();
-        $leaveCount   = $attendances->where('status', 'leave')->count();
+        $presentCount = $attendances->where('status', 'Present')->count();
+        $absentCount  = $attendances->where('status', 'Absent')->count();
+        $leaveCount   = $attendances->where('status', 'Leave')->count();
 
         return view('admin.dashboard', compact(
             'attendances',
@@ -78,7 +78,7 @@ class AdminController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|in:present,absent,leave',
+            'status' => 'required|in:Present,Absent,Leave',
             'date'   => 'required|date',
         ]);
 

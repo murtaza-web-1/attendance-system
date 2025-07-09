@@ -12,9 +12,9 @@
 
         <label>Status:</label>
         <select name="status" required>
-            <option value="present" {{ $attendance->status == 'present' ? 'selected' : '' }}>Present</option>
-            <option value="absent" {{ $attendance->status == 'absent' ? 'selected' : '' }}>Absent</option>
-            <option value="leave" {{ $attendance->status == 'leave' ? 'selected' : '' }}>Leave</option>
+            <option value="Present" {{ $attendance->status == 'Present' ? 'selected' : '' }}>Present</option>
+            <option value="Absent" {{ $attendance->status == 'Absent' ? 'selected' : '' }}>Absent</option>
+            <option value="Leave" {{ $attendance->status == 'Leave' ? 'selected' : '' }}>Leave</option>
         </select><br><br>
 
         <button type="submit">Update</button>
