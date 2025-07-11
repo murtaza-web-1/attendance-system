@@ -9,47 +9,68 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
+    /**
+     * Handle registration of a new user (admin or normal user).
+     */
     public function register(Request $request)
     {
         $request->validate([
-            'name' => 'required|string',
-            'email' => 'required|email|unique:users',
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users,email',
             'password' => 'required|string|min:6|confirmed',
         ]);
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
+            'name'     => $request->name,
+            'email'    => $request->email,
             'password' => Hash::make($request->password),
+            'role'     => $request->input('role', 'student'), 
         ]);
 
-        $token = $user->createToken('api_token')->plainTextToken;
+        Auth::login($user);
 
-        return response()->json(['token' => $token, 'user' => $user]);
+        return redirect()->route($this->redirectTo($user))->with('success', 'Registration successful!');
     }
 
+    /**
+     * Handle login.
+     */
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
-            'password' => 'required'
+            'email'    => 'required|email',
+            'password' => 'required|string',
         ]);
 
-        if (!Auth::attempt($request->only('email', 'password'))) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
+        if (Auth::attempt($request->only('email', 'password'), $request->filled('remember'))) {
+            $request->session()->regenerate();
+
+            $user = Auth::user();
+            return redirect()->route($this->redirectTo($user));
         }
 
-        // $user = Auth::user();    
-        $user = auth('api')->user();
-
-        $token = $user->createToken('api_token')->plainTextToken;
-
-        return response()->json(['token' => $token, 'user' => $user]);
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ])->onlyInput('email');
     }
 
+    /**
+     * Handle logout.
+     */
     public function logout(Request $request)
     {
-        $request->user()->tokens()->delete();
-        return response()->json(['message' => 'Logged out']);
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login')->with('status', 'Logged out successfully.');
+    }
+
+    /**
+     * Get redirect route based on user role.
+     */
+    protected function redirectTo(User $user): string
+    {
+        return $user->role === 'admin' ? 'admin.dashboard' : 'dashboard';
     }
 }

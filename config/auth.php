@@ -2,30 +2,29 @@
 
 return [
 
-    'default' => [
-    'guard' => 'web', 
-    'passwords' => 'users',
-],
-   'guards' => [
-    'web' => [
-        'driver' => 'session',
-        'provider' => 'users',    
+    'defaults' => [
+        'guard' => 'web',
+        'passwords' => 'users',
     ],
-    'api' => [
-        'driver' => 'sanctum',
-        'provider' => 'users',
+
+    'guards' => [
+        'web' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
+
+        'api' => [
+            'driver' => 'sanctum',
+            'provider' => 'users',
+        ],
     ],
-    'admin' => [
-        'driver' => 'session',
-        'provider' => 'admins',
+
+    'providers' => [
+        'users' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\User::class,
+        ],
     ],
-],
-'providers' => [
-    'users' => [
-        'driver' => 'eloquent',
-        'model' => App\Models\User::class,
-    ],    
-    
-],
+
 
 ];
