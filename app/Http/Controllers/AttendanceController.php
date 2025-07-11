@@ -1,16 +1,18 @@
 <?php
 
 namespace App\Http\Controllers;
-use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Attendance;
 use Carbon\Carbon;
 
 class AttendanceController extends Controller
 {
+    // ✅ Used in Blade views (web)
     public function markAttendance(Request $request)
     {
-        $user = $request->user();
+        $user = auth('web')->user(); // ✅ Explicitly using 'web' guard
         $today = Carbon::today();
 
         $alreadyMarked = Attendance::where('user_id', $user->id)
@@ -18,7 +20,7 @@ class AttendanceController extends Controller
             ->exists();
 
         if ($alreadyMarked) {
-             return redirect()->back()->with('success', 'You have already marked attendance today');
+            return redirect()->back()->with('success', 'You have already marked attendance today');
         }
 
         Attendance::create([
@@ -26,13 +28,14 @@ class AttendanceController extends Controller
             'status' => 'present',
             'date' => $today
         ]);
-       
-          return redirect()->back()->with('success', 'Attendance marked successfully!');
+
+        return redirect()->back()->with('success', 'Attendance marked successfully!');
     }
 
+    // ✅ Used in Blade views (web)
     public function markLeave(Request $request)
     {
-        $user = $request->user();
+        $user = auth('web')->user(); // ✅ Explicitly using 'web' guard
         $today = Carbon::today();
 
         $alreadyMarked = Attendance::where('user_id', $user->id)
@@ -42,7 +45,6 @@ class AttendanceController extends Controller
         if ($alreadyMarked) {
             return redirect()->back()->with('success', 'You have already marked attendance/leave today');
         }
-        
 
         Attendance::create([
             'user_id' => $user->id,
@@ -51,29 +53,33 @@ class AttendanceController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Leave marked successfully!');
+    }
+
+    // ✅ For Blade views (web)
+    public function viewAttendance(Request $request)
+    {
+        $user = auth('web')->user(); // ✅ Explicitly using 'web' guard
+
+        $attendances = Attendance::where('user_id', $user->id)
+            ->orderBy('date', 'desc')
+            ->get(['date', 'status']);
+
+        return view('attendance.view', ['records' => $attendances]);
+    }
+
+    // ✅ For API (Postman, Mobile App, etc.)
+    public function getAttendanceData(Request $request)
+    {
+        $user = auth('api')->user(); // ✅ Explicitly using 'api' guard
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
         }
 
- public function viewAttendance(Request $request)
-{
-    $user = $request->user();
+        $attendances = Attendance::where('user_id', $user->id)
+            ->orderBy('date', 'desc')
+            ->get(['date', 'status']);
 
-    $attendances = Attendance::where('user_id', $user->id)
-        ->orderBy('date', 'desc')
-        ->get(['date', 'status']);
-
-    // Return to the Blade view named 'attendance.view'
-    return view('attendance.view', ['records' => $attendances]);
-}
-public function getAttendanceData(Request $request)
-{
-    $user = Auth::user();
-
-    $attendances = Attendance::where('user_id', $user->id)
-        ->orderBy('date', 'desc')
-        ->get(['date', 'status']);
-
-    return response()->json($attendances);
-}
-
-    
+        return response()->json($attendances);
+    }
 }

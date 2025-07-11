@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\API\TaskController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,4 +29,26 @@ Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logo
 
 Route::middleware('auth:sanctum')->post('/user', function (Request $request) {
     return $request->user();
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+
+    // List all tasks (admin or user)
+    Route::get('/tasks', [TaskController::class, 'index']);
+
+    // Show specific task
+    Route::get('/tasks/{id}', [TaskController::class, 'show']);
+
+    // Create new task (admin)
+    Route::post('/tasks', [TaskController::class, 'store']);
+
+    // Update user response / status (user)
+    Route::put('/tasks/{id}', [TaskController::class, 'update']);
+
+    // Admin feedback
+    Route::put('/tasks/{id}/feedback', [TaskController::class, 'adminFeedback']);
+
+    // Delete task (admin)
+    Route::delete('/tasks/{id}', [TaskController::class, 'destroy']);
+
 });
