@@ -24,15 +24,22 @@ class AdminAuthController extends Controller
     {
         $credentials = $request->only('email', 'password');
 
-        // Check if user is an admin
-        $user = User::where('email', $credentials['email'])->where('role', 'admin')->first();
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate(); 
 
-        if ($user && Auth::guard('admin')->attempt($credentials)) {
-            return redirect()->route('admin.dashboard');
+            $user = Auth::user();
+
+            if ($user->role === 'admin') {
+                return redirect()->route('admin.dashboard');
+            }
+
+            Auth::logout();
+            return back()->withErrors(['email' => 'Access denied. Admins only.']);
         }
 
-        return back()->withErrors(['email' => 'Invalid admin credentials']);
+        return back()->withErrors(['email' => 'Invalid credentials'])->onlyInput('email');
     }
+
 
     /**
      * Show the admin registration form.
@@ -68,7 +75,7 @@ class AdminAuthController extends Controller
      */
     public function logout()
     {
-        Auth::guard('admin')->logout();
+        Auth::logout();
         return redirect()->route('admin.login')->with('success', 'Logged out successfully.');
     }
 }
