@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Attendance;
 use App\Models\User;
 use Carbon\Carbon;
+use App\Models\Task;
 
 class AdminController extends Controller
 {
@@ -200,4 +201,29 @@ class AdminController extends Controller
 
         return redirect()->route('admin.grading')->with('success', 'Grades saved successfully.');
     }
+
+    /**
+     * Show form to create a new task.
+     */
+    public function createTaskForm()
+{
+    return view('admin.create-task');
+}
+
+public function storeTask(Request $request)
+{
+    $request->validate([
+        'title' => 'required|string',
+        'description' => 'required|string',
+        'user_id' => 'required|exists:users,id',
+    ]);
+
+    Task::create([
+        'title' => $request->title,
+        'description' => $request->description, // Will contain HTML from CKEditor
+        'user_id' => $request->user_id,
+    ]);
+
+    return redirect()->route('admin.createTask')->with('success', 'Task created successfully!');
+}
 }

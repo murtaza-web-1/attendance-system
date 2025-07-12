@@ -2,17 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Task extends Model
+class TaskSubmission extends Model
 {
-    use HasFactory;
+    protected $table = 'task_submissions'; 
 
     protected $fillable = [
         'user_id',
-        'title',
-        'description',
+        'task_id',
         'response',
         'status',
         'admin_feedback',
@@ -23,9 +21,8 @@ class Task extends Model
         return $this->belongsTo(User::class);
     }
 
-     
-    public function submissions()
+    public function task()
     {
-        return $this->hasMany(TaskSubmission::class);
+        return $this->belongsTo(Task::class);
     }
 }

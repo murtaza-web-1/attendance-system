@@ -1,54 +1,60 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\TaskController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\TaskSubmissionController; // ✅ updated controller
 
-/*
-|--------------------------------------------------------------------------
-| API Routes 
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
-
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/attendance/mark', [AttendanceController::class, 'mark']);
-    Route::post('/attendance/leave', [AttendanceController::class, 'markLeave']);
-    Route::post('/attendance/view', [AttendanceController::class, 'view']);
-});
-
+// ==============================
+// 🔐 Authentication APIs
+// ==============================
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login',    [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
-
-Route::middleware('auth:sanctum')->post('/user', function (Request $request) {
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// ==============================
+// 👤 Student APIs
+// ==============================
 Route::middleware('auth:sanctum')->group(function () {
-
-    // List all tasks (admin or user)
+    // Task Management
     Route::get('/tasks', [TaskController::class, 'index']);
-
-    // Show specific task
     Route::get('/tasks/{id}', [TaskController::class, 'show']);
+    Route::post('/submit-task', [TaskSubmissionController::class, 'submitTask']);
+    Route::get('/my-submissions', [TaskSubmissionController::class, 'mySubmissions']);
 
-    // Create new task (admin)
-    Route::post('/tasks', [TaskController::class, 'store']);
+    // Attendance
+    Route::post('/attendance/present', [AttendanceController::class, 'markPresent']);
+    Route::post('/attendance/leave', [AttendanceController::class, 'markLeave']);
+    Route::get('/attendance', [AttendanceController::class, 'viewAttendance']);
+});
 
-    // Update user response / status (user)
-    Route::put('/tasks/{id}', [TaskController::class, 'update']);
+// ==============================
+// 🛡️ Admin APIs
+// ==============================
+Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
+    // Task Management
+    Route::post('/tasks', [AdminController::class, 'createTask']);
+    Route::post('/tasks/{id}/feedback', [AdminController::class, 'addFeedback']);
 
-    // Admin feedback
-    Route::put('/tasks/{id}/feedback', [TaskController::class, 'adminFeedback']);
+    // Student Management
+    Route::get('/students', [AdminController::class, 'listStudents']);
 
-    // Delete task (admin)
-    Route::delete('/tasks/{id}', [TaskController::class, 'destroy']);
+    // Leave Approval
+    Route::post('/leaves/{id}/approve', [AdminController::class, 'approveLeave']);
 
+    // Attendance Reports
+    Route::get('/attendance/report', [AdminController::class, 'attendanceReport']);
+
+    // Grading
+    Route::post('/grade/{student_id}', [AdminController::class, 'assignGrade']);
+
+    // Task Submission Review
+    Route::get('/all-submissions', [TaskSubmissionController::class, 'allSubmissions']);
+    Route::post('/submission-status/{id}', [TaskSubmissionController::class, 'updateStatus']);
 });

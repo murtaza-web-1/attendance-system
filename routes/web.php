@@ -81,4 +81,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     // Grading
     Route::get('/grading', [AdminController::class, 'grading'])->name('admin.grading');
     Route::post('/grading', [AdminController::class, 'saveGrading'])->name('admin.grading.save');
+   
+    // Task Management
+    Route::get('/admin/create-task', [AdminController::class, 'createTaskForm'])->name('admin.createTask');
+    Route::post('/admin/create-task', [AdminController::class, 'storeTask'])->name('admin.storeTask');
 });
