@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\RoleController;
 
 use App\Models\User;
 //
@@ -89,4 +90,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
    
     // Task Feedback
     Route::get('/assign-role', [AdminController::class, 'assignRoleToUser'])->name('admin.assign.role');
+
+     // Role Management
+    Route::get('/manage-roles', [RoleController::class, 'index'])->name('admin.roles.index');
+    Route::post('/assign-role/{user}', [RoleController::class, 'assign'])->name('admin.roles.assign');
+
 });

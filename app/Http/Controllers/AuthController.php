@@ -12,25 +12,28 @@ class AuthController extends Controller
     /**
      * Handle registration of a new user (admin or normal user).
      */
-    public function register(Request $request)
-    {
-        $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6|confirmed',
-        ]);
+   public function register(Request $request)
+{
+    $request->validate([
+        'name'     => 'required|string|max:255',
+        'email'    => 'required|email|unique:users,email',
+        'password' => 'required|string|min:6|confirmed',
+    ]);
 
-        $user = User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'password' => Hash::make($request->password),
-            'role'     => $request->input('role', 'student'), 
-        ]);
+    $user = User::create([
+        'name'     => $request->name,
+        'email'    => $request->email,
+        'password' => Hash::make($request->password),
+    ]);
 
-        Auth::login($user);
+    //  Assign Spatie role (default to Student)
+    $user->assignRole($request->input('role', 'Student')); //must exist in roles table
 
-        return redirect()->route($this->redirectTo($user))->with('success', 'Registration successful!');
-    }
+    Auth::login($user);
+
+    return redirect()->route($this->redirectTo($user))->with('success', 'Registration successful!');
+}
+
 
     /**
      * Handle login.
