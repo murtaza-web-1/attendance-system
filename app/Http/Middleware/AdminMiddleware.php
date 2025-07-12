@@ -9,10 +9,16 @@ class AdminMiddleware
 {
     public function handle($request, Closure $next)
     {
-        if (Auth::check() && Auth::user()->role === 'admin') {
+        if (Auth::check() && Auth::user()->hasRole('Admin')) {
             return $next($request);
         }
 
+        // For API
+        if ($request->expectsJson()) {
+            return response()->json(['message' => 'Unauthorized. Admin only.'], 403);
+        }
+
+        // For web
         return redirect()->route('admin.login');
     }
 }

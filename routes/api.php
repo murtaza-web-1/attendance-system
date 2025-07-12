@@ -27,6 +27,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/tasks/{id}', [TaskController::class, 'show']);
     Route::post('/submit-task', [TaskSubmissionController::class, 'submitTask']);
     Route::get('/my-submissions', [TaskSubmissionController::class, 'mySubmissions']);
+    // Task Submission Review
+    Route::get('/all-submissions', [TaskSubmissionController::class, 'allSubmissions']);
+    Route::post('/submission-status/{id}', [TaskSubmissionController::class, 'updateStatus']);
 
     // Attendance
     Route::post('/attendance/present', [AttendanceController::class, 'markPresent']);
@@ -53,8 +56,6 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
 
     // Grading
     Route::post('/grade/{student_id}', [AdminController::class, 'assignGrade']);
+    Route::post('/assign-role', [AdminController::class, 'assignRole']);
 
-    // Task Submission Review
-    Route::get('/all-submissions', [TaskSubmissionController::class, 'allSubmissions']);
-    Route::post('/submission-status/{id}', [TaskSubmissionController::class, 'updateStatus']);
 });

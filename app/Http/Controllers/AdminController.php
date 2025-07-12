@@ -7,7 +7,7 @@ use App\Models\Attendance;
 use App\Models\User;
 use Carbon\Carbon;
 use App\Models\Task;
-
+use Spatie\Permission\Models\Role;
 class AdminController extends Controller
 {
     /**
@@ -206,12 +206,12 @@ class AdminController extends Controller
      * Show form to create a new task.
      */
     public function createTaskForm()
-{
+    {
     return view('admin.create-task');
-}
+    }
 
-public function storeTask(Request $request)
-{
+    public function storeTask(Request $request)
+    {
     $request->validate([
         'title' => 'required|string',
         'description' => 'required|string',
@@ -225,5 +225,21 @@ public function storeTask(Request $request)
     ]);
 
     return redirect()->route('admin.createTask')->with('success', 'Task created successfully!');
-}
+    }
+
+    public function assignRole(Request $request)
+    {
+        $request->validate([
+        'user_id' => 'required|exists:users,id',
+        'role' => 'required|exists:roles,name',
+        ]);
+
+        $user = User::findOrFail($request->user_id);
+        $user->syncRoles([$request->role]); // remove old and assign new
+
+        return response()->json([
+        'message' => "Role '{$request->role}' assigned to user successfully.",
+        'user' => $user
+        ]);
+    }
 }

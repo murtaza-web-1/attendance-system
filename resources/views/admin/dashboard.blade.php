@@ -12,6 +12,11 @@
     @if(session('error'))
         <div style="color:red; margin-bottom: 15px;">{{ session('error') }}</div>
     @endif
+    @if (auth('web')->user()->hasRole('Admin'))
+    <p>You are an Admin ✅</p>
+    @else
+    <p>You are NOT an Admin ❌</p>
+    @endif
 
     {{-- 📊 Attendance Summary --}}
     <div style="margin: 20px 0; padding: 15px; background: #f9f9f9; border: 1px solid #ccc;">

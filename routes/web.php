@@ -7,6 +7,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AttendanceController;
 
+use App\Models\User;
 //
 // 🌐 Public Routes
 //
@@ -85,4 +86,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     // Task Management
     Route::get('/admin/create-task', [AdminController::class, 'createTaskForm'])->name('admin.createTask');
     Route::post('/admin/create-task', [AdminController::class, 'storeTask'])->name('admin.storeTask');
+   
+    // Task Feedback
+    Route::get('/assign-role', [AdminController::class, 'assignRoleToUser'])->name('admin.assign.role');
 });

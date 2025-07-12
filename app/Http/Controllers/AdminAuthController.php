@@ -29,10 +29,9 @@ class AdminAuthController extends Controller
 
             $user = Auth::user();
 
-            if ($user->role === 'admin') {
-                return redirect()->route('admin.dashboard');
-            }
-
+            if ($user->hasRole('Admin')) {
+             return redirect()->route('admin.dashboard');   
+    }
             Auth::logout();
             return back()->withErrors(['email' => 'Access denied. Admins only.']);
         }
