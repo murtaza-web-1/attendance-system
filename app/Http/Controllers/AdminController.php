@@ -13,22 +13,35 @@ class AdminController extends Controller
     /**
      * Admin dashboard: show all attendance records with summary.
      */
-    public function dashboard()
-    {
-        $attendances = Attendance::with('user')->latest()->get();
+    public function dashboard(Request $request)
+{
+    // Fetch data
+    $attendances = Attendance::with('user')->latest()->get();
 
-        $presentCount = $attendances->where('status', 'Present')->count();
-        $absentCount  = $attendances->where('status', 'Absent')->count();
-        $leaveCount   = $attendances->where('status', 'Leave')->count();
+    $presentCount = $attendances->where('status', 'Present')->count();
+    $absentCount  = $attendances->where('status', 'Absent')->count();
+    $leaveCount   = $attendances->where('status', 'Leave')->count();
 
-        return view('admin.dashboard', compact(
-            'attendances',
-            'presentCount',
-            'absentCount',
-            'leaveCount'
-        ));
+    $data = compact('attendances', 'presentCount', 'absentCount', 'leaveCount');
+
+    // Check if it's an AJAX request
+    if ($request->ajax()) {
+        // Return only the content view for AJAX
+        return view('admin.users.content-dashboard', $data);
     }
 
+    // Else return the full Blade view (with layout)
+    return view('admin.users.dashboard', $data);
+}
+
+    /**
+     * Show all users with their roles.
+     */
+    public function users()
+    {
+    $users = \App\Models\User::with('roles')->get();
+    return view('admin.users.index', compact('users'));
+    }
     /**
      * Filter and manage attendance by date or name.
      */

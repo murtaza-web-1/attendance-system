@@ -96,6 +96,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     // Permission Management
     Route::get('/manage-permissions', [RoleController::class, 'permissions'])->name('admin.permissions.index');
     Route::post('/assign-permission', [RoleController::class, 'assignPermission'])->name('admin.permissions.assign');
+    // Permission Controller
+    Route::get('/users', [AdminController::class, 'users'])->name('admin.users.index');
+
 });
 
 //only users with mark-attendance permission can access this route.
