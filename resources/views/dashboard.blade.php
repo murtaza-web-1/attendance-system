@@ -124,6 +124,27 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
+<!-- 👇 Role-Based Navigation Starts Here -->
+<nav style="background-color: #1565c0; padding: 10px;">
+    <ul style="display: flex; list-style: none; gap: 20px; color: white; margin: 0; padding: 0;">
+        <li><a href="{{ route('dashboard') }}" style="color: white; text-decoration: none;">Home</a></li>
+
+        @role('Admin')
+            <li><a href="{{ route('admin.roles.index') }}" style="color: white; text-decoration: none;">Manage Roles</a></li>
+            <li><a href="{{ route('admin.users.index') }}" style="color: white; text-decoration: none;">Manage Users</a></li>
+        @endrole
+
+        @role('Teacher')
+            <li><a href="{{ route('teacher.tasks') }}" style="color: white; text-decoration: none;">View Tasks</a></li>
+        @endrole
+
+        @role('Student')
+            <li><a href="{{ route('student.dashboard') }}" style="color: white; text-decoration: none;">My Dashboard</a></li>
+        @endrole
+    </ul>
+</nav>
+<!-- 👆 Role-Based Navigation Ends Here -->
+
 
 <div class="dashboard-container">
     <h2>Welcome, {{ Auth::user()->name }}</h2>

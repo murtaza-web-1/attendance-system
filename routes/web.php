@@ -7,6 +7,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\PermissionController;
+
 
 use App\Models\User;
 //
@@ -95,4 +97,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/manage-roles', [RoleController::class, 'index'])->name('admin.roles.index');
     Route::post('/assign-role/{user}', [RoleController::class, 'assign'])->name('admin.roles.assign');
 
+    //Roles Permission Management
+    Route::get('/manage-permissions', [PermissionController::class, 'index'])->name('admin.permissions.index');
+    Route::post('/update-permissions/{role}', [PermissionController::class, 'update'])->name('admin.permissions.update');
+
+});
+//only users with mark-attendance permission can access this route.
+Route::middleware(['auth', 'permission:mark-attendance'])->group(function () {
+    Route::post('/attendance/mark', [AttendanceController::class, 'markAttendance']);
 });
