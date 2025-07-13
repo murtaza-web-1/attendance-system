@@ -43,7 +43,12 @@ Route::middleware(['auth:web'])->group(function () {
     Route::post('/attendance/view', [AttendanceController::class, 'markAttendance'])->name('attendance.mark');
     Route::get('/attendance/view-submit', [AttendanceController::class, 'getAttendanceData'])->name('attendance.view.submit');
     Route::post('/leave/mark', [AttendanceController::class, 'markLeave'])->name('leave.mark');
+
+    
+    Route::get('/user/attendance', [AttendanceController::class, 'userAttendance'])->name('user.attendance');
+    Route::get('/attendance/export', [AttendanceController::class, 'export'])->name('attendance.export');
 });
+
 
 //
 // 🔐 Admin Authentication Routes

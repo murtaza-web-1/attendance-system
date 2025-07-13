@@ -45,35 +45,35 @@ class AdminController extends Controller
     /**
      * Filter and manage attendance by date or name.
      */
-    public function manageAttendance(Request $request)
-    {
-        $query = Attendance::with('user')->orderBy('date', 'desc');
+public function manageAttendance(Request $request)
+{
+    $query = Attendance::query();
 
-        // Filter by date range
-        if ($request->filled('from') && $request->filled('to')) {
-            $query->whereBetween('date', [$request->from, $request->to]);
-        }
-
-        // Search by user name
-        if ($request->filled('search')) {
-            $query->whereHas('user', function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%');
-            });
-        }
-
-        $attendances = $query->get();
-
-        $presentCount = $attendances->where('status', 'Present')->count();
-        $absentCount  = $attendances->where('status', 'Absent')->count();
-        $leaveCount   = $attendances->where('status', 'Leave')->count();
-
-        return view('admin.dashboard', compact(
-            'attendances',
-            'presentCount',
-            'absentCount',
-            'leaveCount'
-        ));
+    // Optional filters
+    if ($request->has('status') && $request->status !== '') {
+        $query->where('status', $request->status);
     }
+
+    if ($request->filled('start_date')) {
+        $query->whereDate('date', '>=', $request->start_date);
+    }
+
+    if ($request->filled('end_date')) {
+        $query->whereDate('date', '<=', $request->end_date);
+    }
+
+    $records = $query->latest()->paginate(10);
+
+    // AJAX vs Full Page
+    if ($request->ajax()) {
+        // return view('attendance.partial', compact('records'));
+        return view('admin.attendance.partial', compact('records'));
+    }
+
+    // return view('attendance.index', compact('records'));
+    return view('admin.attendance.view', compact('records'));
+}
+
 
     /**
      * Show edit form for a single attendance record.

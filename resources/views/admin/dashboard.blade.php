@@ -3,258 +3,164 @@
 @section('content')
 @include('layouts.navbar')
 
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
 <style>
     body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: #f0f4f8;
-        margin: 0;
-        padding: 0;
+        background-color: #f8f9fa;
     }
 
-    .container {
-        max-width: 1200px;
-        margin: 30px auto;
-        background: #ffffff;
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    .card {
+        border-radius: 15px;
     }
 
-    h2 {
-        color: #0d47a1;
-        margin-bottom: 20px;
+    .table td, .table th {
+        vertical-align: middle;
     }
 
-    .flash-success {
-        color: green;
-        margin-bottom: 15px;
-        font-weight: bold;
+    .badge-status {
+        font-size: 0.9rem;
+        padding: 0.4em 0.6em;
     }
 
-    .flash-error {
-        color: red;
-        margin-bottom: 15px;
-        font-weight: bold;
-    }
-
-    .summary-card {
-        margin: 20px 0;
-        padding: 20px;
-        background: #e8f5e9;
-        border-left: 5px solid #388e3c;
-        border-radius: 10px;
-    }
-
-    .summary-card h4 {
-        margin-bottom: 12px;
-        color: #2e7d32;
-    }
-
-    .summary-card ul {
-        list-style: none;
-        padding-left: 0;
-    }
-
-    .summary-card li {
-        margin-bottom: 6px;
-        font-size: 16px;
-    }
-
-    .table-responsive {
-        overflow-x: auto;
-        margin-top: 20px;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        min-width: 800px;
-    }
-
-    th, td {
-        padding: 12px 16px;
-        text-align: left;
-        border: 1px solid #ddd;
-    }
-
-    th {
-        background: #eeeeee;
-    }
-
-    td button {
-        padding: 6px 12px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 14px;
-    }
-
-    td form {
-        display: inline;
-    }
-
-    .btn-delete {
-        background-color: #d32f2f;
-        color: white;
-    }
-
-    .btn-edit {
-        background-color: #1976d2;
-        color: white;
-    }
-
-    .btn-approve {
-        background-color: #388e3c;
-        color: white;
-    }
-
-    .btn-unapprove {
-        background-color: #fbc02d;
-        color: black;
+    .btn-icon {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.9rem;
     }
 
     @media (max-width: 768px) {
-        .container {
-            padding: 15px;
-        }
-
-        table {
+        .table-responsive {
             font-size: 14px;
         }
 
-        td button {
-            display: block;
-            margin-bottom: 6px;
+        .btn-icon {
             width: 100%;
+            margin-bottom: 8px;
         }
     }
 </style>
 
-<div class="container">
-    <h2>Welcome to Admin Dashboard</h2>
+<div class="container mt-4">
 
     {{-- ✅ Flash Messages --}}
     @if(session('success'))
-        <div class="flash-success">{{ session('success') }}</div>
+        <div class="alert alert-success">{{ session('success') }}</div>
     @endif
-
     @if(session('error'))
-        <div class="flash-error">{{ session('error') }}</div>
+        <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
 
-    @if (auth('web')->user()->hasRole('Admin'))
-        <p style="color: green;">You are an Admin ✅</p>
-    @else
-        <p style="color: red;">You are NOT an Admin ❌</p>
-    @endif
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <h3 class="mb-3">Welcome to Admin Dashboard</h3>
 
-    {{-- 📊 Attendance Summary --}}
-    <div class="summary-card">
-        <h4>📊 Attendance Summary</h4>
-        <ul>
-            <li><strong>✅ Present:</strong> {{ $presentCount }}</li>
-            <li><strong>🚫 Absent:</strong> {{ $absentCount }}</li>
-            <li><strong>🛑 Leave:</strong> {{ $leaveCount }}</li>
-        </ul>
+            @if (auth('web')->user()->hasRole('Admin'))
+                <p class="text-success fw-semibold">You are an Admin ✅</p>
+            @else
+                <p class="text-danger fw-semibold">You are NOT an Admin ❌</p>
+            @endif
+
+            {{-- 📊 Attendance Summary --}}
+            <div class="row text-center mt-4">
+                <div class="col-md-4 mb-3">
+                    <div class="card bg-success bg-opacity-10">
+                        <div class="card-body">
+                            <h5 class="text-success">✅ Present</h5>
+                            <p class="fs-4">{{ $presentCount }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card bg-danger bg-opacity-10">
+                        <div class="card-body">
+                            <h5 class="text-danger">🚫 Absent</h5>
+                            <p class="fs-4">{{ $absentCount }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card bg-warning bg-opacity-10">
+                        <div class="card-body">
+                            <h5 class="text-warning">🛑 Leave</h5>
+                            <p class="fs-4">{{ $leaveCount }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- ✅ Attendance Table --}}
+            <div class="table-responsive mt-4">
+                <table class="table table-bordered table-hover align-middle bg-white">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>User</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Leave Approval</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($attendances as $a)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $a->user->name ?? 'N/A' }}</td>
+                                <td>{{ \Carbon\Carbon::parse($a->date)->format('d M Y') }}</td>
+                                <td>
+                                    @if($a->status === 'Present')
+                                        <span class="badge bg-success badge-status">✅ Present</span>
+                                    @elseif($a->status === 'Absent')
+                                        <span class="badge bg-danger badge-status">🚫 Absent</span>
+                                    @elseif($a->status === 'Leave')
+                                        <span class="badge bg-warning text-dark badge-status">🛑 Leave</span>
+                                    @else
+                                        <span class="badge bg-secondary badge-status">❓ {{ ucfirst($a->status) }}</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($a->status === 'Leave')
+                                        {!! $a->leave_approved
+                                            ? '<span class="badge bg-success">✅ Approved</span>'
+                                            : '<span class="badge bg-danger">❌ Not Approved</span>' !!}
+                                    @else
+                                        <span class="text-muted">N/A</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <a href="{{ route('admin.attendance.edit', $a->id) }}" class="btn btn-sm btn-primary btn-icon">
+                                        ✏️ Edit
+                                    </a>
+
+                                    <form action="{{ route('admin.attendance.delete', $a->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure to delete this record?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="btn btn-sm btn-danger btn-icon" type="submit">
+                                            🗑️ Delete
+                                        </button>
+                                    </form>
+
+                                    @if($a->status === 'Leave')
+                                        <form method="POST" action="{{ route('admin.attendance.toggle-leave', $a->id) }}" style="display:inline;">
+                                            @csrf
+                                            <button class="btn btn-sm {{ $a->leave_approved ? 'btn-warning text-dark' : 'btn-success' }} btn-icon" type="submit">
+                                                {{ $a->leave_approved ? '❎ Unapprove' : '✅ Approve' }}
+                                            </button>
+                                        </form>
+                                    @endif
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">No attendance records found.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-
-    {{-- ✅ Attendance Table --}}
-    <div class="table-responsive">
-        <table>
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>User</th>
-                    <th>Date</th>
-                    <th>Status</th>
-                    <th>Leave Approved</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($attendances as $a)
-                    <tr>
-                        <td>{{ $loop->iteration }}</td>
-                        <td>{{ $a->user->name ?? 'N/A' }}</td>
-                        <td>{{ \Carbon\Carbon::parse($a->date)->format('d M Y') }}</td>
-                        <td>
-                            @if($a->status === 'Present') ✅ Present
-                            @elseif($a->status === 'Absent') 🚫 Absent
-                            @elseif($a->status === 'Leave') 🛑 Leave
-                            @else ❓ {{ ucfirst($a->status) }}
-                            @endif
-                        </td>
-                        <td>{{ $a->leave_approved ? '✅ Approved' : '❌ Not Approved' }}</td>
-                        <td>
-                            <a href="{{ route('admin.attendance.edit', $a->id) }}">
-                                <button class="btn-edit">✏️ Edit</button>
-                            </a>
-
-                            <form method="POST" action="{{ route('admin.attendance.delete', $a->id) }}" onsubmit="return confirm('Are you sure to delete this record?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn-delete">🗑️ Delete</button>
-                            </form>
-
-                            @if($a->status === 'Leave')
-                                <form method="POST" action="{{ route('admin.attendance.toggle-leave', $a->id) }}">
-                                    @csrf
-                                    <button type="submit" class="{{ $a->leave_approved ? 'btn-unapprove' : 'btn-approve' }}">
-                                        {{ $a->leave_approved ? '❎ Unapprove' : '✅ Approve' }} Leave
-                                    </button>
-                                </form>
-                            @endif
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="6" style="text-align: center;">No attendance records found.</td>
-                    </tr>
-                @endforelse
-
-                
-
-            </tbody>
-        </table>
-    </div>
-    
-<script>
-    $(document).ready(function () {
-        $('#view-attendance-btn').click(function () {
-            $('#attendance-section').html('<p>Loading attendance...</p>');
-
-            $.ajax({
-                url: "{{ route('attendance.view.submit') }}",
-                method: "GET",
-                success: function (data) {
-                    let html = `
-                        <h3>Your Attendance</h3>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                    `;
-                    if (data.length === 0) {
-                        html += '<tr><td colspan="2">No records found.</td></tr>';
-                    } else {
-                        data.forEach(function (record) {
-                            html += `<tr><td>${record.date}</td><td>${record.status}</td></tr>`;
-                        });
-                    }
-
-                    html += '</tbody></table>';
-                    $('#attendance-section').html(html);
-                },
-                error: function () {
-                    $('#attendance-section').html('<p style="color:red;">Error loading attendance data.</p>');
-                }
-            });
-        });
-    });
-</script>
 </div>
 @endsection
