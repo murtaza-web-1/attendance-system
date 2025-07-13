@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class RoleController extends Controller
 {
-    // Show all users and their roles
+    /**
+     * Show all users and their assigned roles.
+     */
     public function index()
     {
         $users = User::with('roles')->get();
@@ -17,7 +20,9 @@ class RoleController extends Controller
         return view('admin.manage-roles', compact('users', 'roles'));
     }
 
-    // Assign role to user
+    /**
+     * Assign a role to a user.
+     */
     public function assign(Request $request, User $user)
     {
         $request->validate([
@@ -27,5 +32,32 @@ class RoleController extends Controller
         $user->syncRoles([$request->role]);
 
         return redirect()->route('admin.roles.index')->with('success', 'Role updated successfully!');
+    }
+
+    /**
+     * Show all roles and their assigned permissions.
+     */
+    public function permissions()
+    {
+        $roles = Role::with('permissions')->get();
+        $permissions = Permission::all();
+
+        return view('admin.roles.permissions', compact('roles', 'permissions'));
+    }
+
+    /**
+     * Assign a permission to a role.
+     */
+    public function assignPermission(Request $request)
+    {
+        $request->validate([
+            'role' => 'required|exists:roles,name',
+            'permission' => 'required|exists:permissions,name',
+        ]);
+
+        $role = Role::findByName($request->role);
+        $role->givePermissionTo($request->permission);
+
+        return back()->with('success', 'Permission assigned to role.');
     }
 }

@@ -1,8 +1,8 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('content')
 <div class="container">
-    <h2>Admin Dashboard</h2>
+    <h2>Welcome to Admin Dashboard</h2>
 
     {{-- ✅ Flash Messages --}}
     @if(session('success'))
@@ -12,10 +12,11 @@
     @if(session('error'))
         <div style="color:red; margin-bottom: 15px;">{{ session('error') }}</div>
     @endif
+
     @if (auth('web')->user()->hasRole('Admin'))
-    <p>You are an Admin ✅</p>
+        <p>You are an Admin ✅</p>
     @else
-    <p>You are NOT an Admin ❌</p>
+        <p>You are NOT an Admin ❌</p>
     @endif
 
     {{-- 📊 Attendance Summary --}}
@@ -67,7 +68,7 @@
                         <button type="submit" onclick="return confirm('Are you sure to delete this record?')">🗑️ Delete</button>
                     </form>
 
-                    {{-- ✅ Only show approve/unapprove if status is Leave --}}
+                    {{-- ✅ Leave Approval --}}
                     @if($a->status === 'Leave')
                         |
                         <form method="POST" action="{{ route('admin.attendance.toggle-leave', $a->id) }}" style="display:inline;">

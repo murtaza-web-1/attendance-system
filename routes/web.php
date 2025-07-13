@@ -60,14 +60,13 @@ Route::prefix('admin')->group(function () {
     Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
 });
 
-//
+
 // 🛡️ Admin Protected Routes
-//
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     // Dashboard
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
-    // ✅ Attendance Management (with filtering & search)
+    // Attendance Management
     Route::get('/attendance', [AdminController::class, 'manageAttendance'])->name('admin.attendance.view');
     Route::get('/attendance/edit/{id}', [AdminController::class, 'edit'])->name('admin.attendance.edit');
     Route::post('/attendance/update/{id}', [AdminController::class, 'update'])->name('admin.attendance.update');
@@ -85,24 +84,21 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     // Grading
     Route::get('/grading', [AdminController::class, 'grading'])->name('admin.grading');
     Route::post('/grading', [AdminController::class, 'saveGrading'])->name('admin.grading.save');
-   
-    // Task Management
-    Route::get('/admin/create-task', [AdminController::class, 'createTaskForm'])->name('admin.createTask');
-    Route::post('/admin/create-task', [AdminController::class, 'storeTask'])->name('admin.storeTask');
-   
-    // Task Feedback
-    Route::get('/assign-role', [AdminController::class, 'assignRoleToUser'])->name('admin.assign.role');
 
-     // Role Management
+    // Task Management
+    Route::get('/create-task', [AdminController::class, 'createTaskForm'])->name('admin.createTask');
+    Route::post('/create-task', [AdminController::class, 'storeTask'])->name('admin.storeTask');
+
+    // Role Management
     Route::get('/manage-roles', [RoleController::class, 'index'])->name('admin.roles.index');
     Route::post('/assign-role/{user}', [RoleController::class, 'assign'])->name('admin.roles.assign');
 
-    //Roles Permission Management
-    Route::get('/manage-permissions', [PermissionController::class, 'index'])->name('admin.permissions.index');
-    Route::post('/update-permissions/{role}', [PermissionController::class, 'update'])->name('admin.permissions.update');
-
+    // Permission Management
+    Route::get('/manage-permissions', [RoleController::class, 'permissions'])->name('admin.permissions.index');
+    Route::post('/assign-permission', [RoleController::class, 'assignPermission'])->name('admin.permissions.assign');
 });
+
 //only users with mark-attendance permission can access this route.
-Route::middleware(['auth', 'permission:mark-attendance'])->group(function () {
+Route::middleware(['auth', 'permission:mark attendance'])->group(function () {
     Route::post('/attendance/mark', [AttendanceController::class, 'markAttendance']);
 });
