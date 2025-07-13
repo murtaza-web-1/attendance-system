@@ -139,7 +139,7 @@
         @endrole
 
         @role('Student')
-            <li><a href="{{ route('student.dashboard') }}" style="color: white; text-decoration: none;">My Dashboard</a></li>
+            <li><a href="{{ route('dashboard') }}" style="color: white; text-decoration: none;">My Dashboard</a></li>
         @endrole
     </ul>
 </nav>

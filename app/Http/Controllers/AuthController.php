@@ -6,18 +6,18 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
-
+use Spatie\Permission\Models\Role;
 class AuthController extends Controller
 {
     /**
      * Handle registration of a new user (admin or normal user).
      */
-   public function register(Request $request)
+  public function register(Request $request)
 {
     $request->validate([
-        'name'     => 'required|string|max:255',
-        'email'    => 'required|email|unique:users,email',
-        'password' => 'required|string|min:6|confirmed',
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users',
+        'password' => 'required|string|confirmed|min:6',
     ]);
 
     $user = User::create([
@@ -26,12 +26,12 @@ class AuthController extends Controller
         'password' => Hash::make($request->password),
     ]);
 
-    //  Assign Spatie role (default to Student)
-    $user->assignRole($request->input('role', 'Student')); //must exist in roles table
+    // Assign default role
+    $user->assignRole('Student'); // 👈 default
 
     Auth::login($user);
 
-    return redirect()->route($this->redirectTo($user))->with('success', 'Registration successful!');
+    return redirect()->route('dashboard')->with('success', 'Registration successful!');
 }
 
 
