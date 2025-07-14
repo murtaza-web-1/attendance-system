@@ -22,35 +22,67 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($users as $user)
-                    <tr>
-                        <form method="POST" action="{{ route('admin.roles.assign', $user->id) }}">
-                            @csrf
-                            <td>{{ $user->name }}</td>
-                            <td>{{ $user->email }}</td>
-                            <td>
-                                <span class="badge bg-primary">
-                                    {{ $user->getRoleNames()->first() ?? 'None' }}
-                                </span>
-                            </td>
-                            <td>
-                                <div class="d-flex gap-2">
-                                    <select name="role" class="form-select form-select-sm" required>
-                                        @foreach ($roles as $role)
-                                            <option value="{{ $role }}" {{ $user->hasRole($role) ? 'selected' : '' }}>
-                                                {{ ucfirst($role) }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    <button type="submit" class="btn btn-sm btn-success">Update</button>
-                                </div>
-                            </td>
-                        </form>
-                    </tr>
+                 @foreach ($users as $user)
+<tr>
+    <td>{{ $user->name }}</td>
+    <td>{{ $user->email }}</td>
+    <td>
+        <span class="badge bg-primary">
+            {{ $user->getRoleNames()->first() ?? 'None' }}
+        </span>
+    </td>
+    <td>
+        <form method="POST" action="{{ route('admin.roles.assign', $user->id) }}" class="role-assign-form">
+            @csrf
+            <div class="d-flex gap-2">
+                <select name="role" class="form-select form-select-sm" required>
+                    @foreach ($roles as $role)
+                        <option value="{{ $role }}" {{ $user->hasRole($role) ? 'selected' : '' }}>
+                            {{ ucfirst($role) }}
+                        </option>
                     @endforeach
+                </select>
+                <button type="submit" class="btn btn-sm btn-success">Update</button>
+            </div>
+            <div class="role-message mt-2"></div>
+        </form>
+    </td>
+</tr>
+@endforeach
+
                 </tbody>
             </table>
         </div>
     </div>
 </div>
+@section('scripts')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).on('submit', '.role-assign-form', function (e) {
+        e.preventDefault();
+
+        const form = $(this);
+        const actionUrl = form.attr('action');
+        const formData = form.serialize();
+        const messageBox = form.find('.role-message');
+
+        $.ajax({
+            type: 'POST',
+            url: actionUrl,
+            data: formData,
+            success: function(response) {
+                messageBox.html('<div class="alert alert-success p-2 mb-0">' + response.message + '</div>');
+            },
+            error: function(xhr) {
+                let errorText = 'Something went wrong.';
+                if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    errorText = Object.values(xhr.responseJSON.errors).flat().join('<br>');
+                }
+                messageBox.html('<div class="alert alert-danger p-2 mb-0">' + errorText + '</div>');
+            }
+        });
+    });
+</script>
+@endsection
+
 @endsection

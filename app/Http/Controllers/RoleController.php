@@ -33,21 +33,20 @@ class RoleController extends Controller
 
     //     return redirect()->route('admin.roles.index')->with('success', 'Role updated successfully!');
     // }
-    public function assign(Request $request, User $user)
+  public function assign(Request $request, $userId)
 {
-     // 👇 Add this line first
-    \Log::info('Assign method hit', $request->all());
+    \Log::info('Assign method hit', ['role' => $request->role]);
+
     $request->validate([
         'role' => 'required|exists:roles,name',
     ]);
 
+    $user = User::findOrFail($userId);
     $user->syncRoles([$request->role]);
 
-    return response()->json([
-        'message' => '✅ Role updated successfully!',
-        'role' => $request->role
-    ]);
+    return response()->json(['message' => 'Role updated successfully.']);
 }
+
 
     /**
      * Show all roles and their assigned permissions.
