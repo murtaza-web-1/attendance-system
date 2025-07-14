@@ -7,6 +7,7 @@ use App\Models\Attendance;
 use App\Models\User;
 use Carbon\Carbon;
 use App\Models\Task;
+use App\Models\TaskSubmission;
 use Spatie\Permission\Models\Role;
 class AdminController extends Controller
 {
@@ -239,7 +240,31 @@ public function storeTask(Request $request)
 
     return response()->json(['message' => '✅ Task created successfully!']);
 }
+   public function submittedTasks(Request $request)
+{
+    $submissions = TaskSubmission::with('user', 'task')->latest()->get();
 
+    if ($request->ajax()) {
+        return view('admin.submitted-tasks-content', compact('submissions'));
+    }
+
+    return view('admin.submitted-tasks', compact('submissions'));
+}
+
+public function updateSubmissionStatus(Request $request, $id)
+{
+    $request->validate([
+        'status' => 'required|in:approved,rejected',
+        'feedback' => 'nullable|string',
+    ]);
+
+    $submission = TaskSubmission::findOrFail($id);
+    $submission->status = $request->status;
+    $submission->admin_feedback = $request->feedback;
+    $submission->save();
+
+    return redirect()->back()->with('success', 'Submission status updated.');
+}
 
     public function assignRole(Request $request)
     {

@@ -121,20 +121,23 @@
     </a>
 
     @hasrole('Admin')
-        <a href="{{ route('admin.roles.index') }}" class="ajax-link">
-            <i class="bi bi-person-badge"></i> Manage Roles
-        </a>
+    <a href="{{ route('admin.roles.index') }}" class="ajax-link">
+        <i class="bi bi-person-badge"></i> Manage Roles
+    </a>
 
-        <a href="{{ route('admin.permissions.index') }}" class="ajax-link">
-            <i class="bi bi-shield-lock"></i> Manage Permissions
-        </a>
+    <a href="{{ route('admin.permissions.index') }}" class="ajax-link">
+        <i class="bi bi-shield-lock"></i> Manage Permissions
+    </a>
 
-        <a href="{{ route('admin.createTask') }}" class="ajax-link">
-            <i class="bi bi-pencil-square"></i> Assign Tasks
-        </a>
-    
+    <a href="{{ route('admin.createTask') }}" class="ajax-link">
+        <i class="bi bi-pencil-square"></i> Assign Tasks
+    </a>
 
-    @endhasrole
+    <a href="{{ route('admin.submissions') }}" class="ajax-link">
+        <i class="bi bi-clipboard-check"></i> Submitted Tasks
+    </a>
+@endhasrole
+
 
     @hasanyrole('Admin|Teacher|HR')
         <a href="{{ route('admin.attendance.view') }}" class="ajax-link">

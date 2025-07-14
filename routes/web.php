@@ -39,27 +39,27 @@ Route::get('/logout', function () {
 // 👤 User Protected Routes
 //
 Route::middleware(['auth:web'])->group(function () {
-    Route::get('/dashboard', fn() => view('dashboard'))->name('dashboard');
 
-    // Attendance
+    // ✅ Dashboard - with assigned tasks
+    Route::get('/dashboard', function () {
+        $tasks = Task::where('user_id', auth()->id())->latest()->get();
+        return view('dashboard', compact('tasks'));
+    })->name('dashboard');
+
+    // ✅ Attendance Routes
     Route::get('/attendance/view', [AttendanceController::class, 'viewAttendance'])->name('attendance.view');
     Route::post('/attendance/view', [AttendanceController::class, 'markAttendance'])->name('attendance.mark');
     Route::get('/attendance/view-submit', [AttendanceController::class, 'getAttendanceData'])->name('attendance.view.submit');
     Route::post('/leave/mark', [AttendanceController::class, 'markLeave'])->name('leave.mark');
-
-    
     Route::get('/user/attendance', [AttendanceController::class, 'userAttendance'])->name('user.attendance');
     Route::get('/attendance/export', [AttendanceController::class, 'export'])->name('attendance.export');
 
-    // Tasks
-    Route::get('/dashboard', function () {
-    $tasks = Task::where('user_id', auth()->id())->latest()->get();
-    return view('dashboard', compact('tasks'));
-})->middleware('auth:web')->name('dashboard');
-    // Task submission 
+    // ✅ Task Submission by user
     Route::post('/tasks/{id}/submit', [TaskController::class, 'submit'])->name('task.submit');
-    
 
+    // ✅ Admin Task Submissions View + Action
+    Route::get('/submitted-tasks', [AdminController::class, 'submittedTasks'])->name('admin.submissions');
+    Route::post('/submitted-tasks/{id}/update', [AdminController::class, 'updateSubmissionStatus'])->name('admin.submissions.update');
 });
 
 

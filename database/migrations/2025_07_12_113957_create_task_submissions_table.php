@@ -17,7 +17,7 @@ return new class extends Migration
     $table->foreignId('task_id')->constrained('tasks')->onDelete('cascade');
     $table->text('response');
     $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
-    $table->text('feedback')->nullable();
+    $table->text('admin_feedback')->nullable();
     $table->timestamps();
 });
 
