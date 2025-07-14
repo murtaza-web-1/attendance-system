@@ -29,8 +29,15 @@
     <div class="card permission-card p-4 mb-5">
         <h3 class="mb-4">🔐 Manage Role Permissions</h3>
 
+        {{-- ✅ Flash Message --}}
+        @if(session('success'))
+            <div class="alert alert-success text-center">
+                {{ session('success') }}
+            </div>
+        @endif
+
         {{-- ✅ Assign Permission Form --}}
-        <form action="{{ route('admin.permissions.assign') }}" method="POST">
+        <form action="{{ route('admin.permissions.assign') }}" method="POST" class="reload-form" >
             @csrf
             <div class="row g-3 align-items-end">
                 <div class="col-md-4">
@@ -82,4 +89,24 @@
         </ul>
     </div>
 </div>
+<script>
+    $(document).on('submit', '.reload-form', function (e) {
+        e.preventDefault();
+
+        const form = $(this);
+        const url = form.attr('action');
+        const data = form.serialize();
+
+        $.post(url, data, function () {
+            // Refresh the permission page via AJAX after assigning
+            $.get("{{ route('admin.permissions.index') }}", function (response) {
+                $('#main-content').html(response);
+                history.pushState(null, '', "{{ route('admin.permissions.index') }}");
+            });
+        }).fail(function () {
+            alert('Failed to assign permission. Please try again.');
+        });
+    });
+</script>
+
 @endsection

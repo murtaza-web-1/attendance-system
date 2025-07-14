@@ -48,16 +48,21 @@ class RoleController extends Controller
     /**
      * Assign a permission to a role.
      */
-    public function assignPermission(Request $request)
-    {
-        $request->validate([
-            'role' => 'required|exists:roles,name',
-            'permission' => 'required|exists:permissions,name',
-        ]);
+   public function assignPermission(Request $request)
+{
+    $request->validate([
+        'role' => 'required|exists:roles,name',
+        'permission' => 'required|exists:permissions,name',
+    ]);
 
-        $role = Role::findByName($request->role);
-        $role->givePermissionTo($request->permission);
+    $role = Role::findByName($request->role);
+    $permission = Permission::findByName($request->permission);
 
-        return back()->with('success', 'Permission assigned to role.');
+    if (!$role->hasPermissionTo($permission)) {
+        $role->givePermissionTo($permission);
     }
+
+    return redirect()->route('admin.permissions.index')
+     ->with('success', '✅ Permission assigned successfully!');
+}
 }
