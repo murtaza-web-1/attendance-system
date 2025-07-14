@@ -23,16 +23,31 @@ class RoleController extends Controller
     /**
      * Assign a role to a user.
      */
+    // public function assign(Request $request, User $user)
+    // {
+    //     $request->validate([
+    //         'role' => 'required|exists:roles,name',
+    //     ]);
+
+    //     $user->syncRoles([$request->role]);
+
+    //     return redirect()->route('admin.roles.index')->with('success', 'Role updated successfully!');
+    // }
     public function assign(Request $request, User $user)
-    {
-        $request->validate([
-            'role' => 'required|exists:roles,name',
-        ]);
+{
+     // 👇 Add this line first
+    \Log::info('Assign method hit', $request->all());
+    $request->validate([
+        'role' => 'required|exists:roles,name',
+    ]);
 
-        $user->syncRoles([$request->role]);
+    $user->syncRoles([$request->role]);
 
-        return redirect()->route('admin.roles.index')->with('success', 'Role updated successfully!');
-    }
+    return response()->json([
+        'message' => '✅ Role updated successfully!',
+        'role' => $request->role
+    ]);
+}
 
     /**
      * Show all roles and their assigned permissions.

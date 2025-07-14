@@ -66,42 +66,43 @@ Route::prefix('admin')->group(function () {
 });
 
 
-// 🛡️ Admin Protected Routes
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
-    // Dashboard
+
+    // ✅ Admin Dashboard
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
-    // Attendance Management
+    // ✅ Attendance Management
     Route::get('/attendance', [AdminController::class, 'manageAttendance'])->name('admin.attendance.view');
     Route::get('/attendance/edit/{id}', [AdminController::class, 'edit'])->name('admin.attendance.edit');
     Route::post('/attendance/update/{id}', [AdminController::class, 'update'])->name('admin.attendance.update');
     Route::delete('/attendance/delete/{id}', [AdminController::class, 'destroy'])->name('admin.attendance.delete');
     Route::post('/attendance/toggle-leave/{id}', [AdminController::class, 'toggleLeave'])->name('admin.attendance.toggle-leave');
 
-    // Leave Management
+    // ✅ Leave Requests
     Route::get('/leaves', [AdminController::class, 'leaves'])->name('admin.leaves');
     Route::post('/leaves/approve/{id}', [AdminController::class, 'approveLeave'])->name('admin.leaves.approve');
 
-    // Attendance Reports
+    // ✅ Attendance Reports
     Route::get('/reports', [AdminController::class, 'reports'])->name('admin.reports');
     Route::post('/reports', [AdminController::class, 'generateReport'])->name('admin.reports.generate');
 
-    // Grading
+    // ✅ Grading
     Route::get('/grading', [AdminController::class, 'grading'])->name('admin.grading');
     Route::post('/grading', [AdminController::class, 'saveGrading'])->name('admin.grading.save');
 
-    // Task Management
+    // ✅ Task Management
     Route::get('/create-task', [AdminController::class, 'createTaskForm'])->name('admin.createTask');
     Route::post('/create-task', [AdminController::class, 'storeTask'])->name('admin.storeTask');
 
-    // Role Management
+    // ✅ Role Management
     Route::get('/manage-roles', [RoleController::class, 'index'])->name('admin.roles.index');
     Route::post('/assign-role/{user}', [RoleController::class, 'assign'])->name('admin.roles.assign');
 
-    // Permission Management
+    // ✅ Permission Management
     Route::get('/manage-permissions', [RoleController::class, 'permissions'])->name('admin.permissions.index');
     Route::post('/assign-permission', [RoleController::class, 'assignPermission'])->name('admin.permissions.assign');
-    // Permission Controller
+
+    // ✅ User List
     Route::get('/users', [AdminController::class, 'users'])->name('admin.users.index');
 
 });

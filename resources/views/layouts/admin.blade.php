@@ -132,6 +132,8 @@
         <a href="{{ route('admin.createTask') }}" class="ajax-link">
             <i class="bi bi-pencil-square"></i> Assign Tasks
         </a>
+    
+
     @endhasrole
 
     @hasanyrole('Admin|Teacher|HR')
