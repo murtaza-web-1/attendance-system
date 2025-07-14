@@ -23,7 +23,7 @@
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+{{-- <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="{{ route('admin.dashboard') }}">Admin Panel</a>
         <div class="collapse navbar-collapse">
@@ -34,7 +34,7 @@
             </ul>
         </div>
     </div>
-</nav>
+</nav> --}}
 
 <div class="container">
     @if(session('success'))

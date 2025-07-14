@@ -116,34 +116,34 @@
         <small>{{ auth()->user()->getRoleNames()->implode(', ') }}</small>
     </div>
 
-    <a href="{{ route('admin.dashboard') }}" class="ajax-link {{ Route::is('admin.dashboard') ? 'active' : '' }}">
+    <a href="{{ route('admin.dashboard') }}" class="ajax-link">
         <i class="bi bi-speedometer2"></i> Dashboard
     </a>
 
     @hasrole('Admin')
-        <a href="{{ route('admin.roles.index') }}" class="ajax-link {{ Route::is('admin.roles.index') ? 'active' : '' }}">
+        <a href="{{ route('admin.roles.index') }}" class="ajax-link">
             <i class="bi bi-person-badge"></i> Manage Roles
         </a>
 
-        <a href="{{ route('admin.permissions.index') }}" class="ajax-link {{ Route::is('admin.permissions.index') ? 'active' : '' }}">
+        <a href="{{ route('admin.permissions.index') }}" class="ajax-link">
             <i class="bi bi-shield-lock"></i> Manage Permissions
         </a>
 
-        <a href="{{ route('admin.createTask') }}" class="ajax-link {{ Route::is('admin.createTask') ? 'active' : '' }}">
+        <a href="{{ route('admin.createTask') }}" class="ajax-link">
             <i class="bi bi-pencil-square"></i> Assign Tasks
         </a>
     @endhasrole
 
     @hasanyrole('Admin|Teacher|HR')
-        <a href="{{ route('admin.attendance.view') }}" class="ajax-link {{ Route::is('admin.attendance.*') ? 'active' : '' }}">
+        <a href="{{ route('admin.attendance.view') }}" class="ajax-link">
             <i class="bi bi-clipboard-check"></i> Attendance Panel
         </a>
 
-        <a href="{{ route('admin.reports') }}" class="ajax-link {{ Route::is('admin.reports') ? 'active' : '' }}">
+        <a href="{{ route('admin.reports') }}" class="ajax-link">
             <i class="bi bi-graph-up"></i> Attendance Reports
         </a>
 
-        <a href="{{ route('admin.grading') }}" class="ajax-link {{ Route::is('admin.grading') ? 'active' : '' }}">
+        <a href="{{ route('admin.grading') }}" class="ajax-link">
             <i class="bi bi-award"></i> Grading
         </a>
     @endhasanyrole
@@ -156,6 +156,7 @@
     </form>
 </div>
 
+
 {{-- 📦 Main Content Area --}}
 <div id="main-content">
     @yield('content')
@@ -165,12 +166,31 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-{{-- ✅ AJAX Sidebar Navigation --}}
+{{--  AJAX Sidebar Navigation --}}
 <script>
+    //  Highlight the correct sidebar link on page load
+    $(document).ready(function () {
+        const currentUrl = window.location.href;
+
+        $('.ajax-link').each(function () {
+            if (this.href === currentUrl) {
+                $(this).addClass('active');
+            }
+        });
+    });
     $(document).on('click', '.ajax-link', function (e) {
         e.preventDefault();
-        const url = $(this).attr('href');
 
+        const $clickedLink = $(this);
+        const url = $clickedLink.attr('href');
+
+        // Remove active class from all
+        $('.ajax-link').removeClass('active');
+
+        // Add active to clicked link
+        $clickedLink.addClass('active');
+
+        // Optional loader
         $('#main-content').html(`
             <div class="text-center p-5">
                 <div class="spinner-border text-primary" role="status">
@@ -179,6 +199,7 @@
             </div>
         `);
 
+        // Load via AJAX
         $.ajax({
             url: url,
             method: 'GET',
@@ -191,7 +212,27 @@
             }
         });
     });
+
+    // Handle browser back/forward
+    window.addEventListener('popstate', function () {
+        const currentUrl = window.location.href;
+
+        // Update active class
+        $('.ajax-link').removeClass('active');
+        $('.ajax-link').each(function () {
+            if (this.href === currentUrl) {
+                $(this).addClass('active');
+            }
+        });
+
+        $.get(currentUrl, function (response) {
+            $('#main-content').html(response);
+        });
+    });
 </script>
+
+
+
 
 @yield('scripts')
 </body>
