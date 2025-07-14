@@ -8,6 +8,9 @@ use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\UserTaskController;
+use App\Http\Controllers\TaskController;
+use App\Models\Task;
 
 
 use App\Models\User;
@@ -47,6 +50,16 @@ Route::middleware(['auth:web'])->group(function () {
     
     Route::get('/user/attendance', [AttendanceController::class, 'userAttendance'])->name('user.attendance');
     Route::get('/attendance/export', [AttendanceController::class, 'export'])->name('attendance.export');
+
+    // Tasks
+    Route::get('/dashboard', function () {
+    $tasks = Task::where('user_id', auth()->id())->latest()->get();
+    return view('dashboard', compact('tasks'));
+})->middleware('auth:web')->name('dashboard');
+    // Task submission 
+    Route::post('/tasks/{id}/submit', [TaskController::class, 'submit'])->name('task.submit');
+    
+
 });
 
 

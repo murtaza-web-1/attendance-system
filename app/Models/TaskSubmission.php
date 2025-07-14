@@ -1,20 +1,11 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
 class TaskSubmission extends Model
 {
-    protected $table = 'task_submissions'; 
-
-    protected $fillable = [
-        'user_id',
-        'task_id',
-        'response',
-        'status',
-        'admin_feedback',
-    ];
+    protected $fillable = ['user_id', 'task_id', 'response', 'status', 'feedback'];
 
     public function user()
     {
