@@ -223,22 +223,23 @@ public function manageAttendance(Request $request)
     return view('admin.create-task');
     }
 
-    public function storeTask(Request $request)
-    {
+public function storeTask(Request $request)
+{
     $request->validate([
-        'title' => 'required|string',
+        'title'       => 'required|string|max:255',
         'description' => 'required|string',
-        'user_id' => 'required|exists:users,id',
+        'user_id'     => 'required|exists:users,id',
     ]);
 
     Task::create([
-        'title' => $request->title,
-        'description' => $request->description, // Will contain HTML from CKEditor
-        'user_id' => $request->user_id,
+        'title'       => $request->title,
+        'description' => $request->description, // CKEditor HTML allowed
+        'user_id'     => $request->user_id,
     ]);
 
-    return redirect()->route('admin.createTask')->with('success', 'Task created successfully!');
-    }
+    return response()->json(['message' => '✅ Task created successfully!']);
+}
+
 
     public function assignRole(Request $request)
     {
