@@ -5,7 +5,6 @@ namespace App\Providers;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Event;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -17,6 +16,20 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class => [
             SendEmailVerificationNotification::class,
+        ],
+
+        // ✅ Custom Events
+        \App\Events\AttendanceMarked::class => [
+            \App\Listeners\SendAttendanceWhatsAppNotification::class,
+        ],
+        \App\Events\LeaveRequested::class => [
+            \App\Listeners\SendLeaveWhatsAppNotification::class,
+        ],
+        \App\Events\TaskAssigned::class => [
+            \App\Listeners\SendTaskAssignWhatsAppNotification::class,
+        ],
+        \App\Events\TaskSubmissionUpdated::class => [
+            \App\Listeners\SendTaskReviewWhatsAppNotification::class,
         ],
     ];
 

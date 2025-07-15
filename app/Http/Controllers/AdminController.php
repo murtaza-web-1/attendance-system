@@ -8,7 +8,13 @@ use App\Models\User;
 use Carbon\Carbon;
 use App\Models\Task;
 use App\Models\TaskSubmission;
+use App\Events\TaskAssigned;
+use App\Events\TaskSubmissionUpdated;
+
+
 use Spatie\Permission\Models\Role;
+use App\Services\WhatsAppService;
+
 class AdminController extends Controller
 {
     /**
@@ -232,13 +238,17 @@ public function storeTask(Request $request)
         'user_id'     => 'required|exists:users,id',
     ]);
 
-    Task::create([
+    $task = Task::create([
         'title'       => $request->title,
-        'description' => $request->description, // CKEditor HTML allowed
+        'description' => $request->description, // CKEditor HTML supported
         'user_id'     => $request->user_id,
     ]);
 
-    return response()->json(['message' => '✅ Task created successfully!']);
+    // ✅ Trigger WhatsApp Event
+    $user = User::find($request->user_id);
+    event(new TaskAssigned($user, $task));
+
+    return response()->json(['message' => '✅ Task created and WhatsApp message sent via event.']);
 }
    public function submittedTasks(Request $request)
 {
@@ -263,7 +273,10 @@ public function updateSubmissionStatus(Request $request, $id)
     $submission->admin_feedback = $request->feedback;
     $submission->save();
 
-    return redirect()->back()->with('success', 'Submission status updated.');
+    // ✅ Trigger WhatsApp Event (handled in listener)
+    event(new TaskSubmissionUpdated($submission));
+
+    return redirect()->back()->with('success', 'Submission status updated & user notified via WhatsApp.');
 }
 
     public function assignRole(Request $request)

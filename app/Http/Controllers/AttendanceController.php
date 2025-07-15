@@ -5,56 +5,75 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Attendance;
+use App\Services\WhatsAppService;
+use App\Events\AttendanceMarked;
+use App\Events\LeaveRequested;
+
 use Carbon\Carbon;
 
 class AttendanceController extends Controller
 {
     //  Used in Blade views (web)
-    public function markAttendance(Request $request)
-    {
-        $user = auth('web')->user(); // ✅ Explicitly using 'web' guard
-        $today = Carbon::today();
 
-        $alreadyMarked = Attendance::where('user_id', $user->id)
-            ->where('date', $today)
-            ->exists();
 
-        if ($alreadyMarked) {
-            return redirect()->back()->with('success', 'You have already marked attendance today');
-        }
+public function markAttendance(Request $request)
+{
+    $user = auth('web')->user(); // ✅ Explicitly using 'web' guard
+    $today = Carbon::today();
 
-        Attendance::create([
-            'user_id' => $user->id,
-            'status' => 'present',
-            'date' => $today
-        ]);
+    $alreadyMarked = Attendance::where('user_id', $user->id)
+        ->where('date', $today)
+        ->exists();
 
-        return redirect()->back()->with('success', 'Attendance marked successfully!');
+    if ($alreadyMarked) {
+        return redirect()->back()->with('success', 'You have already marked attendance today');
     }
+
+    Attendance::create([
+        'user_id' => $user->id,
+        'status' => 'present',
+        'date' => $today
+    ]);
+
+    // ✅ Trigger WhatsApp Event
+    event(new AttendanceMarked($user));
+
+    return redirect()->back()->with('success', 'Attendance marked successfully!');
+}
 
     //  Used in Blade views (web)
-    public function markLeave(Request $request)
-    {
-        $user = auth('web')->user(); // ✅ Explicitly using 'web' guard
-        $today = Carbon::today();
 
-        $alreadyMarked = Attendance::where('user_id', $user->id)
-            ->where('date', $today)
-            ->exists();
 
-        if ($alreadyMarked) {
-            return redirect()->back()->with('success', 'You have already marked attendance/leave today');
-        }
+public function markLeave(Request $request)
+{
+    $request->validate([
+        'reason' => 'required|string',
+        'date' => 'nullable|date', // optional date support
+    ]);
 
-        Attendance::create([
-            'user_id' => $user->id,
-            'status' => 'leave',
-            'date' => $today
-        ]);
+    $user = auth('web')->user();
+    $date = $request->date ?? Carbon::today();
 
-        return redirect()->back()->with('success', 'Leave marked successfully!');
+    $alreadyMarked = Attendance::where('user_id', $user->id)
+        ->where('date', $date)
+        ->exists();
+
+    if ($alreadyMarked) {
+        return redirect()->back()->with('success', 'You have already marked attendance/leave for this date');
     }
 
+    Attendance::create([
+        'user_id' => $user->id,
+        'status' => 'leave',
+        'date' => $date,
+        'reason' => $request->reason,
+    ]);
+
+    // ✅ Trigger WhatsApp Event
+    event(new LeaveRequested($user, $request->reason, $date->toDateString()));
+
+    return redirect()->back()->with('success', 'Leave marked successfully!');
+}
     //  For Blade views (web)
     public function viewAttendance(Request $request)
     {
