@@ -140,7 +140,7 @@
                             <td>{{ $task->title }}</td>
                             <td>{!! $task->description !!}</td>
                             <td>
-                                <span style="color: white; padding: 4px 8px; border-radius: 4px;"
+                                <span style="color: rgb(0, 85, 255); padding: 4px 8px; border-radius: 4px;"
                                       class="badge bg-{{ $task->status === 'submitted' ? 'success' : 'warning' }}">
                                     {{ ucfirst($task->status) }}
                                 </span>
