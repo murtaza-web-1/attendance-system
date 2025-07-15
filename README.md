@@ -1,124 +1,145 @@
-# Laravel Attendance & Task Management System
+# 📝 Laravel Attendance & Task Management System
 
-This Laravel project is a full-featured **student attendance and task submission system** with role-based access control using Spatie. It includes an admin panel, user panel, task submission and grading system, leave approvals, and attendance export functionality.
+This project is a full-featured **Attendance and Task Management System** built using **Laravel 10**, **MySQL**, and **Postman API Testing**. It supports:
 
----
-
-## 📂 Features
-
-### ✅ Authentication
-- Admin and User authentication system.
-- Separate login/register for Admin and Users.
-- Role-based access using Spatie Permission package.
-
-### ✅ Admin Panel
-- View all users and assign roles.
-- Manage attendance (view, edit, delete).
-- Approve/reject leave requests.
-- View attendance summary (Present, Absent, Leave counts).
-- Filter attendance by date range or status.
-- Export attendance to Excel.
-- Assign tasks to users.
-- View submitted tasks from students.
-- Approve/reject task submissions with feedback.
-- Grade students based on attendance.
-- Generate attendance reports between date ranges.
-
-### ✅ User Panel
-- View assigned tasks.
-- Submit task responses (with feedback field).
-- Mark attendance (Present, Absent, Leave).
-- View personal attendance history.
-- See attendance report.
-- Auto-role assignment on registration (e.g., Student).
+- ✅ Student registration, attendance marking, leave requests
+- ✅ Admin panel with user management, task assignment, attendance control
+- ✅ Role & Permission control using Spatie
+- ✅ API + Blade support (hybrid system)
 
 ---
 
-## 🔐 Roles & Permissions (via Spatie)
+## ⚙️ Features
 
-| Role     | Abilities                                       |
-|----------|-------------------------------------------------|
-| Admin    | Full access: attendance, tasks, grading, users. |
-| Student  | Submit tasks, mark attendance, view reports.    |
+### 👤 User (Student)
 
-Permissions are dynamically assigned using a role management panel.
+- Register / Login via Blade UI
+- Mark daily attendance
+- Submit leave requests
+- View attendance history
+- Submit assigned tasks
+
+### 🛠️ Admin
+
+- Separate admin login
+- View and manage all users
+- Assign tasks to users
+- Approve/reject submitted tasks
+- View attendance (Present / Absent / Leave)
+- Edit/Delete attendance records
+- Filter attendance by date/status
+- View leave requests and approve them
+- Assign grades based on attendance
+- Manage roles and permissions (Spatie package)
 
 ---
 
-## ⚙️ Tech Stack
+## 🧑‍💻 Tech Stack
 
-- Laravel 10+
-- MySQL
-- Spatie/laravel-permission
-- Bootstrap 5 (for UI)
-- jQuery & AJAX (for dynamic content load)
-- CKEditor (for rich text task description)
-- Postman (for API testing)
+- Laravel 10
+- MySQL (phpMyAdmin)
+- Blade Templates
+- Spatie Laravel Permission
+- Bootstrap 5.3
+- Postman (API testing)
 
 ---
 
 ## 📁 Folder Structure
 
-- `resources/views/admin/` → Admin Blade views (dashboard, attendance, grading, etc.)
-- `resources/views/user/` → User dashboard and task views.
-- `app/Http/Controllers/` → Controllers for Admin, Auth, Attendance, Tasks.
-- `routes/web.php` → Blade routes for admin & users.
-- `routes/api.php` → API routes for task submission & mobile integration.
+├── app/
+├── database/
+├── public/
+├── resources/
+│ └── views/
+│ ├── auth/ # Login/Register pages
+│ ├── admin/ # Admin panel views
+│ ├── user/ # Student panel views
+├── routes/
+│ └── web.php
+├── postman/
+│ └── attendance-system-api.postman_collection.json
+├── README.md
+
+
+## 🔑 User Roles & Permissions
+
+| Role     | Permissions                      |
+|----------|----------------------------------|
+| Admin    | Full access to all modules       |
+| Student  | Can mark attendance and tasks    |
+| Teacher/HR (optional) | Extendable roles    |
+
+> Roles and permissions are managed using [Spatie Laravel Permission](https://spatie.be/docs/laravel-permission).
 
 ---
 
-## 🚀 How to Run Locally
+## 🚀 Setup Instructions
 
-1. **Clone the repo:**
+1. Clone the repo:
    ```bash
    git clone https://github.com/murtaza-web-1/attendance-system.git
    cd attendance-system
+2. Install dependencies:
 
-1- Install dependencies:
+bash
+Copy
+Edit
 composer install
 npm install && npm run dev
+3. Create .env file and setup DB:
 
-2- Environment setup:
+bash
+Copy
+Edit
 cp .env.example .env
 php artisan key:generate
+4. Run migrations and seed default roles:
 
-3- Database setup:
+bash
+Copy
+Edit
+php artisan migrate --seed
+5. Start the server:
 
-Create a MySQL DB (e.g., attendance_system)
-
-Update .env DB credentials
-
-Run migrations and seed roles/permissions:
-
-php artisan migrate
-php artisan db:seed
-
-
-4- run the app
+bash
+Copy
+Edit
 php artisan serve
+🧪 Postman API Collection
+All APIs (Authentication, Attendance, Task Submissions) are testable in Postman.
 
-Admin Credentials (Sample)
+📂 File: postman/attendance-system-api.postman_collection.json
 
-Email: admin@gmail.com
-Password: admin123
+👉 📥 Download Postman Collection
+
+Folders in Postman:
+Authentication
+
+Register
+
+Login
+
+Student APIs
+
+Mark Attendance
+
+Submit Leave
+
+Submit Task
+
+Admin APIs
+
+Approve/Reject Tasks
+
+View Submissions
+
+Manage Attendance
 
 
- Developer Notes
-Uses admin_feedback field for task feedback.
-
-Prevents duplicate task submissions.
-
-Auto-role assignment on registration.
-
-AJAX used in admin dashboard for partial updates.
-
-Blade-based frontend and optional REST API support.
-
-
- Author
-Name: Murtaza Ahmad
-
-Email: mrkhan77707@gmail.com
-
-GitHub: murtaza-web-1
-
+🙋 Author
+Developed by Murtaza Ahmad
+📍 university Town, peshawer
+📱 0333-5910033
+📧 mrkhan77707@gmail.com
+🌐 GitHub: murtaza-web-1

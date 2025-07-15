@@ -3,6 +3,30 @@
 This file documents all the available API endpoints for the **Laravel Attendance & Task Management System**, which are used for mobile apps or Postman-based testing.
 
 ---
+## 🧪 Postman API Collection
+
+All APIs (Authentication, Student, Admin) are documented and testable using Postman.
+
+📁 Download or import this collection into your Postman:
+[📥 Click here to import](postman/attendance-system-api.postman_collection.json)
+
+
+## 🔗 API Testing with Postman
+
+A complete Postman collection is available in the `postman/` folder.
+
+### 🔹 Includes:
+
+- User Registration & Login
+- Admin Login
+- Attendance Submission
+- Leave Marking
+- Task Submission
+- Admin Approval
+
+### 📩 Import to Postman:
+[📥 Download Postman Collection](postman/attendance-system-api.postman_collection.json)
+
 
 ## 🔐 Authentication
 
