@@ -111,6 +111,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/manage-roles', [RoleController::class, 'index'])->name('admin.roles.index');
     Route::post('/assign-role/{user}', [RoleController::class, 'assign'])->name('admin.roles.assign');
     Route::post('/admin/roles/create', [RoleController::class, 'storeAjax'])->name('admin.roles.store.ajax');
+    Route::delete('/admin/roles/delete', [RoleController::class, 'destroy'])->name('admin.roles.delete');
+
 
 
     // ✅ Permission Management

@@ -67,6 +67,15 @@
                 <div class="col-md-4">
                     <button type="submit" class="btn btn-success w-100">Assign Permission</button>
                 </div>
+                <strong>{{ ucfirst($role->name) }}</strong>
+@if($role->name !== 'Admin')
+    <button class="btn btn-sm btn-outline-danger ms-2 btn-delete-role"
+            data-role="{{ $role->name }}"
+            title="Delete Role">
+        🗑️
+    </button>
+@endif
+
             </div>
         </form>
         <div id="assign-alert" class="mt-3"></div>
@@ -171,5 +180,30 @@
             }
         });
     });
+    $(document).on('click', '.btn-delete-role', function () {
+    const role = $(this).data('role');
+    // if (!confirm(`Are you sure you want to delete the "${role}" role?`)) return;
+
+    $.ajax({
+        url: "{{ route('admin.roles.delete') }}",
+        method: "DELETE",
+        data: {
+            _token: '{{ csrf_token() }}',
+            role: role
+        },
+        success: function (res) {
+            alert(res.message);
+            $.get("{{ route('admin.permissions.index') }}", function (html) {
+                $('#main-content').html(html);
+                history.pushState(null, '', "{{ route('admin.permissions.index') }}");
+            });
+        },
+        error: function (xhr) {
+            const msg = xhr.responseJSON?.message || 'Something went wrong!';
+            alert("❌ " + msg);
+        }
+    });
+});
+
 </script>
 @endsection

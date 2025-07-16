@@ -108,4 +108,20 @@ public function storeAjax(Request $request)
         'role' => $role->name
     ]);
 }
+public function destroy(Request $request)
+{
+    $request->validate([
+        'role' => 'required|string|exists:roles,name',
+    ]);
+
+    $role = Role::where('name', $request->role)->first();
+
+    if ($role->name === 'Admin') {
+        return response()->json(['message' => '❌ Cannot delete Admin role.'], 403);
+    }
+
+    $role->delete();
+
+    return response()->json(['message' => '🗑️ Role deleted successfully.']);
+}
 }
