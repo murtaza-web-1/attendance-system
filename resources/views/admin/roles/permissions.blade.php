@@ -71,42 +71,62 @@
     <div class="card permission-card p-4">
         <h5 class="mb-3">🧾 Roles and Their Permissions</h5>
 
-        <ul class="list-group list-group-flush">
-            @foreach($roles as $role)
-                <li class="list-group-item">
-                    <strong>{{ ucfirst($role->name) }}</strong>:
-                    @if($role->permissions->count())
-                        <div class="mt-2">
-                            @foreach($role->permissions as $perm)
-                                <span class="badge badge-permission">{{ $perm->name }}</span>
-                            @endforeach
-                        </div>
-                    @else
-                        <span class="text-muted">No permissions yet</span>
-                    @endif
-                </li>
-            @endforeach
-        </ul>
+     <ul class="list-group list-group-flush">
+    @foreach($roles as $role)
+        <li class="list-group-item">
+            <strong>{{ ucfirst($role->name) }}</strong>:
+            @if($role->permissions->count())
+                <div class="mt-2 d-flex flex-wrap gap-2">
+                    @foreach($role->permissions as $perm)
+                        <span class="badge badge-permission d-flex align-items-center">
+                            {{ $perm->name }}
+                            <button class="btn btn-sm btn-danger ms-2 btn-remove-permission"
+                                    data-role="{{ $role->name }}"
+                                    data-permission="{{ $perm->name }}"
+                                    title="Remove Permission">
+                                <i class="bi bi-x-circle-fill"></i>
+                            </button>
+                        </span>
+                    @endforeach
+                </div>
+            @else
+                <span class="text-muted">No permissions yet</span>
+            @endif
+        </li>
+    @endforeach
+</ul>
+
     </div>
 </div>
+@section('scripts')
 <script>
-    $(document).on('submit', '.reload-form', function (e) {
-        e.preventDefault();
+    $(document).on('click', '.btn-remove-permission', function () {
+        const role = $(this).data('role');
+        const permission = $(this).data('permission');
 
-        const form = $(this);
-        const url = form.attr('action');
-        const data = form.serialize();
+        // if (!confirm(`Are you sure to remove "${permission}" from ${role}?`)) return;                
 
-        $.post(url, data, function () {
-            // Refresh the permission page via AJAX after assigning
-            $.get("{{ route('admin.permissions.index') }}", function (response) {
-                $('#main-content').html(response);
-                history.pushState(null, '', "{{ route('admin.permissions.index') }}");
-            });
-        }).fail(function () {
-            alert('Failed to assign permission. Please try again.');
+        $.ajax({
+            url: "{{ route('admin.permissions.remove') }}",
+            method: "POST",
+            data: {
+                _token: '{{ csrf_token() }}',
+                role: role,
+                permission: permission
+            },
+            success: function () {
+                $.get("{{ route('admin.permissions.index') }}", function (response) {
+                    $('#main-content').html(response);
+                    history.pushState(null, '', "{{ route('admin.permissions.index') }}");
+                });
+            },
+            error: function () {
+                alert("Failed to remove permission.");
+            }
         });
     });
 </script>
+@endsection
+
 
 @endsection

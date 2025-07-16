@@ -114,6 +114,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     // ✅ Permission Management
     Route::get('/manage-permissions', [RoleController::class, 'permissions'])->name('admin.permissions.index');
     Route::post('/assign-permission', [RoleController::class, 'assignPermission'])->name('admin.permissions.assign');
+    Route::post('/admin/permissions/remove', [RoleController::class, 'removePermission'])->name('admin.permissions.remove');
+
 
     // ✅ User List
     Route::get('/users', [AdminController::class, 'users'])->name('admin.users.index');

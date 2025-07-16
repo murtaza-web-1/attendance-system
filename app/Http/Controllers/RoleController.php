@@ -46,6 +46,15 @@ class RoleController extends Controller
 
     return response()->json(['message' => 'Role updated successfully.']);
 }
+public function removePermission(Request $request)
+{
+    $role = Role::findByName($request->role);
+    $permission = Permission::findByName($request->permission);
+
+    $role->revokePermissionTo($permission);
+
+    return response()->json(['message' => 'Permission removed']);
+}
 
 
     /**
