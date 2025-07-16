@@ -110,6 +110,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     // ✅ Role Management
     Route::get('/manage-roles', [RoleController::class, 'index'])->name('admin.roles.index');
     Route::post('/assign-role/{user}', [RoleController::class, 'assign'])->name('admin.roles.assign');
+    Route::post('/admin/roles/create', [RoleController::class, 'storeAjax'])->name('admin.roles.store.ajax');
+
 
     // ✅ Permission Management
     Route::get('/manage-permissions', [RoleController::class, 'permissions'])->name('admin.permissions.index');

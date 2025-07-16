@@ -91,5 +91,21 @@ public function assignPermission(Request $request)
 
     return response()->json(['message' => 'Permission assigned successfully!']);
 }
+/**
+     * Store a new role via AJAX.
+     */
+public function storeAjax(Request $request)
+{
+    $request->validate([
+        'name' => 'required|string|unique:roles,name'
+    ]);
 
+    $role = Role::create(['name' => $request->name]);
+
+    // Return JSON for frontend updates
+    return response()->json([
+        'message' => '✅ Role created successfully!',
+        'role' => $role->name
+    ]);
+}
 }
