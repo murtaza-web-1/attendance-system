@@ -71,7 +71,7 @@ public function removePermission(Request $request)
     /**
      * Assign a permission to a role.
      */
-   public function assignPermission(Request $request)
+public function assignPermission(Request $request)
 {
     $request->validate([
         'role' => 'required|exists:roles,name',
@@ -81,11 +81,15 @@ public function removePermission(Request $request)
     $role = Role::findByName($request->role);
     $permission = Permission::findByName($request->permission);
 
-    if (!$role->hasPermissionTo($permission)) {
-        $role->givePermissionTo($permission);
+    // 🔍 Double-check if permission is assigned
+    if ($role->permissions->contains('name', $permission->name)) {
+        return response()->json(['message' => 'Permission already exists.']);
     }
 
-    return redirect()->route('admin.permissions.index')
-     ->with('success', '✅ Permission assigned successfully!');
+    // ✅ Assign permission
+    $role->givePermissionTo($permission);
+
+    return response()->json(['message' => 'Permission assigned successfully!']);
 }
+
 }

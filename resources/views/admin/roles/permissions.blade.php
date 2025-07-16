@@ -37,34 +37,35 @@
         @endif
 
         {{-- ✅ Assign Permission Form --}}
-        <form action="{{ route('admin.permissions.assign') }}" method="POST" class="reload-form" >
-            @csrf
-            <div class="row g-3 align-items-end">
-                <div class="col-md-4">
-                    <label class="form-label">Select Role</label>
-                    <select name="role" class="form-select" required>
-                        <option disabled selected>Choose a role...</option>
-                        @foreach($roles as $role)
-                            <option value="{{ $role->name }}">{{ $role->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Select Permission</label>
-                    <select name="permission" class="form-select" required>
-                        <option disabled selected>Choose a permission...</option>
-                        @foreach($permissions as $perm)
-                            <option value="{{ $perm->name }}">{{ $perm->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <button class="btn btn-success w-100">
-                        ✅ Assign Permission
-                    </button>
-                </div>
-            </div>
-        </form>
+        <form id="assign-permission-form">
+    @csrf
+    <div class="row g-3 align-items-end">
+        <div class="col-md-4">
+            <label class="form-label">Select Role</label>
+            <select name="role" class="form-select" required>
+                <option disabled selected>Choose a role...</option>
+                @foreach($roles as $role)
+                    <option value="{{ $role->name }}">{{ $role->name }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Select Permission</label>
+            <select name="permission" class="form-select" required>
+                <option disabled selected>Choose a permission...</option>
+                @foreach($permissions as $perm)
+                    <option value="{{ $perm->name }}">{{ $perm->name }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-md-4">
+            <button type="submit" class="btn btn-success w-100">
+                ✅ Assign Permission
+            </button>
+        </div>
+    </div>
+</form>
+
     </div>
 
     {{-- 🔍 Roles and their Permissions --}}
@@ -100,6 +101,7 @@
 </div>
 @section('scripts')
 <script>
+
     $(document).on('click', '.btn-remove-permission', function () {
         const role = $(this).data('role');
         const permission = $(this).data('permission');
@@ -126,6 +128,33 @@
         });
     });
 </script>
+<script>
+    $(document).on('submit', '#assign-permission-form', function (e) {
+        e.preventDefault(); // prevent normal form submit
+
+        const form = $(this);
+        const url = "{{ route('admin.permissions.assign') }}";
+
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: form.serialize(),
+            success: function (response) {
+                // Show success message
+                $('<div class="alert alert-success mt-3">✅ ' + response.message + '</div>')
+                    .insertAfter('#assign-permission-form')
+                    .delay(3000).fadeOut();
+            },
+            error: function (xhr) {
+                let error = xhr.responseJSON?.message || "Something went wrong!";
+                $('<div class="alert alert-danger mt-3">❌ ' + error + '</div>')
+                    .insertAfter('#assign-permission-form')
+                    .delay(3000).fadeOut();
+            }
+        });
+    });
+</script>
+
 @endsection
 
 
