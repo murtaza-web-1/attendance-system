@@ -55,7 +55,9 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/attendance/export', [AttendanceController::class, 'export'])->name('attendance.export');
 
     // ✅ Task Submission by user
-    Route::post('/tasks/{id}/submit', [TaskController::class, 'submit'])->name('task.submit');
+    Route::post('/tasks/submit', [TaskController::class, 'submit'])->name('task.view.submit');
+    Route::get('/user/my-tasks', [TaskController::class, 'myTasks'])->name('user.tasks.list');
+    Route::post('/user/tasks/{id}/submit', [TaskController::class, 'submit'])->name('user.tasks.submit');
 
     // ✅ Admin Task Submissions View + Action
     Route::get('/submitted-tasks', [AdminController::class, 'submittedTasks'])->name('admin.submissions');
